@@ -1,0 +1,89 @@
+{% include "header.html" %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<!--style="background-image: url('../static/assets/img/home-bg.jpg')"-->
+<div class="fixed-top">
+  {% with messages = get_flashed_messages(category_filter=["success"]) %}
+    {% if messages %}
+        {% for message in messages %}
+            <div id="overlay_flash" class="alert alert-success alert-dismissible fade show" role="alert">
+                {{message}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+</div>
+
+<header>
+                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                     <a >
+                                         <img src="https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-674010.jpg&fm=jpg"  class="d-block w-100" alt="..." id="carouselContents">
+                                     </a>
+                                     <div class="carousel-caption d-none d-md-block">
+                                         <h1> cac bai viet noi bai </h1>
+                                         <h2> </h2>
+                                     </div>
+                                </div>
+                                {% for post in all_posts %}
+                                 <div class="carousel-item">
+<!--                                     href="post/{{post.id}}"-->
+                                     <a >
+                                         {% if post.img_url == "" %}
+                                         <img src="https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-674010.jpg&fm=jpg"  class="d-block w-100" alt="..." id="carouselContents">
+
+                                         {% else %}
+                                         <img src="{{post.img_url}}"  class="d-block w-100" alt="..." id="carouselContents">
+                                          {% endif %}
+                                     </a>
+                                     <div class="carousel-caption d-none d-md-block">
+                                         <h1> {{post.title}} </h1>
+                                         <h2> {{post.subtitle}} </h2>
+                                     </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                <span><i class="fa fa-angle-left" aria-hidden="true"></i></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                <span><i class="fa fa-angle-right" aria-hidden="true"></i></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            </div>
+
+        </header>
+
+
+        <!-- Main Content-->
+        <div class="container px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+        {% for post in all_posts %}
+        <!-- Post preview-->
+                    <div class="post-preview">
+                        <a href="post/{{post.id}}">
+                            <h2 class="post-title">{{post.title}}</h2>
+                            <h3 class="post-subtitle">{{post.subtitle}}</h3>
+                        </a>
+                        <p class="post-meta">
+                            Posted by
+                            <a href="#!">{{post.author}}</a>
+                            on {{post.date}}
+                        </p>
+                    </div>
+                    <!-- Divider-->
+                    <hr class="my-4" />
+        {% endfor %}
+                    <!-- Pager-->
+                    <div class="d-flex justify-content-end mb-4"><a class="btn btn-primary text-uppercase" href="#!">Older Posts →</a></div>
+                    <div class="d-flex justify-content-start mb-4"><a class="btn btn-primary text-uppercase" href="/newpost">Create post →</a></div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Footer-->
+{% include "footer.html" %}

@@ -1,0 +1,56 @@
+{% include 'header.html' %}
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url({{post.img_url}})">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+<!--                        #Safe filter applied to the post.body-->
+
+                        <div class="post-heading">
+                            <h1>{{post.title}}</h1>
+                            <h2 class="subheading">{{post.subtitle}}</h2>
+                            <span class="meta">
+                                Posted by
+                                <a href="#!">{{post.author}}</a>
+                                on {{post.date}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+
+<!--          #Safe filter applied to the post.body-->
+            {%+ if post %}
+                            {{ post.body|safe }}
+                        {% endif %}
+          <hr>
+           <div class="clearfix">
+          <a class="btn btn-primary float-right" href="{{url_for('views.edit_post',post_id=post.id)}}">Edit Post</a>
+        </div>
+          </div>
+      </div>
+    </div>
+            <div class="comments">
+                <div class="container">
+                    <h3>Comments</h3>
+                    {% for comment in post.comments %}
+                    <div class="row justify-content-md mt-3">
+                        <div class="col-md">
+                            <div class="border border-secondary border-4" style="padding-left:2.5%">
+                                <p>{{ comment.content|safe }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+
+  </article>
+        <!-- Footer-->
+        {% include 'footer.html' %}
