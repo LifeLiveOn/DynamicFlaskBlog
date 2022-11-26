@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Error page</title>
-    <link href="../../static/css/styles.css" rel="stylesheet" />
+   <link  href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet" type= "text/css" />
 </head>
 <body style="display: inline-block;
   background: #00AFF9 url(https://cbwconline.com/IMG/Codepen/Unplugged.png) center/cover no-repeat;
@@ -17,26 +17,6 @@
   font: 2em Roboto;">Something went wrong</p>
 <a style="margin: .8em 3rem;
   font: 4em Roboto;" href="{{url_for('views.get_all_posts')}}">Go Back!</a>
-<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="..." class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="..." class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="..." class="d-block w-100" alt="...">
-    </div>
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</div>
+
 </body>
 </html>

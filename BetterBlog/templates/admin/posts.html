@@ -15,63 +15,49 @@
   {% endwith %}
 </div>
 
-
-{% if not is_edit %}
-<head>
-<h1> User Details</h1>
-    <title>Users Detail</title>
-</head>
+<!--Table content to summary the post -->
 <div class="container" style="margin-right: 0px;padding-right: 0px;">
         <div class="row justify-content-end">
             <div class="col-4">
-                <button type="button" class="btn btn-primary" style="float:right;">Create user</button>
+                <button type="button" class="btn btn-primary" style="float:right;"><a href="{{url_for('views.create_post')}}">Create new Post</a></button>
             </div>
         </div>
 </div>
-
 <div class="table-responsive">
     <table class="table table-hover table-sm">
         <thead class="thead" id="thead_dark">
             <tr>
                 <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
+                <th>Title</th>
+                <th>Subtitle</th>
                 <th>Date Created</th>
-                <th>IsAuthor</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-
-            {% for user in users.items %}
+            {% for post in posts.items %}
             <tr>
                 <th scope="row">{{ loop.index }}</th>
-                <td>{{ user.username }}</td>
-                <td>{{user.email}}</td>
-                <td>{{ user.date_created }}</td>
-                {% if user.is_Author %}
-                <td class="text-success">{{user.is_Author}}</td>
-                {% else %}
-                <td class="text-danger"><i class="fa-solid fa-xmark"></i></td>
-                {% endif %}
+                <td>{{ post.title }}</td>
+                <td>{{post.subtitle}}</td>
+                <td>{{ post.date_created }}</td>
                 <td>
-                                <a href={{url_for('controlPanel.edit_user',user_id=user.id)}}>
+                                <a href={{url_for('controlPanel.edit_post',post_id=post.id)}}>
                                     <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
                                 </a>
-								<button id="{{user.id}}" name="DeleteAuthor" onclick="document.getElementById('deleteEmployeeModal').style.display='block';document.getElementById('delete_user_id').setAttribute('value',this.id)">
+								<button id="{{post.id}}" name="DeletePost" onclick="document.getElementById('deletePostModal').style.display='block';document.getElementById('delete_post_id').setAttribute('value',this.id)">
                                     <i class="material-icons" data-toggle="tooltip" title="Delete" >&#xE872;</i>
                                 </button>
                 </td>
             </tr>
             {% endfor %}
-
         </tbody>
     </table>
 </div>
 
 <!-- Pagination Links-->
 <div class="text-right">
-    <a href="{{ url_for('controlPanel.users', page=pagination.prev_num) }}"
+    <a href="{{ url_for('controlPanel.posts', page=pagination.prev_num) }}"
        class="btn btn-outline-dark
        {% if pagination.page == 1 %}disabled{% endif %}">
         &laquo;
@@ -81,12 +67,12 @@
 {% if page_num %}
 <!-- Check for the active page and set the link to "Active"-->
             {% if pagination.page == page_num %}
-            <a href="{{ url_for('controlPanel.users', page=page_num) }}"
+            <a href="{{ url_for('controlPanel.posts', page=page_num) }}"
                class="btn btn-dark">
                 {{ page_num }}
             </a>
             {% else %}
-            <a href="{{ url_for('controlPanel.users', page=page_num) }}"
+            <a href="{{ url_for('controlPanel.posts', page=page_num) }}"
                class="btn btn-outline-dark">
                 {{ page_num }}
             </a>
@@ -95,7 +81,7 @@
             ...
         {% endif %}
     {% endfor %}
-    <a href="{{ url_for('controlPanel.users', page=pagination.next_num) }}"
+    <a href="{{ url_for('controlPanel.posts', page=pagination.next_num) }}"
        class="btn btn-outline-dark
        {% if pagination.page == pagination.pages %}disabled{% endif %}">
         &raquo;
@@ -106,30 +92,14 @@
 </p>
 
 
-<!--if not edit-->
-{% endif %}
-
-<!-- Edit Modal HTML -->
-{% if is_edit %}
-            <h2><a href="{{url_for('controlPanel.users')}}" style="color:#25b1b1">Go Back</a></h2>
-<div class="container">
-                <h3>Edit user here</h3>
-				{{ wtf.quick_form(form, novalidate=True, button_map={"submit": "danger"}) }}
-
-                <h1 style="color:red"> Are you sure with this action? </h1>
-</div>
-
-
-{% endif %}
-
-    <!-- Delete Modal HTML -->
-	<div id="deleteEmployeeModal" class="modal">
-        <span onclick="document.getElementById('deleteEmployeeModal').style.display='none'" class="close" title="Close Modal">&times;</span>
+<!-- Delete Modal HTML -->
+	<div id="deletePostModal" class="modal">
+        <span onclick="document.getElementById('deletePostModal').style.display='none'" class="close" title="Close Modal">&times;</span>
 		<div class="modal-dialog">
-				<form class="modal-content" action={{url_for('controlPanel.delete_user')}} method="post">
+				<form class="modal-content" action={{url_for('controlPanel.delete_post')}} method="post">
 					<div class="modal-header">
 						<h4 class="modal-title">Delete Authors</h4>
-						<button type="button" onclick="document.getElementById('deleteEmployeeModal').style.display='none'" >&times;</button>
+						<button type="button" onclick="document.getElementById('deletePostModal').style.display='none'" >&times;</button>
 					</div>
 					<div class="modal-body">
 						<p>Are you sure you want to delete these Records?</p>
@@ -137,14 +107,13 @@
 					</div>
 					<div class="modal-footer">
 <!--                        https://stackoverflow.com/questions/19794695/flask-python-buttons    -->
-						<input type="button" onclick="document.getElementById('deleteEmployeeModal').style.display='none'" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <input type="hidden" id="delete_user_id" name="delete_author">
+						<input type="button" onclick="document.getElementById('deletePostModal').style.display='none'" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="hidden" id="delete_post_id" name="delete_post">
 						<input type="submit"  class="btn btn-danger" value="Delete">
 					</div>
 				</form>
 		</div>
 	</div>
-<script>
-    document.getElementById("delete_user_id").setAttribute('value',user_id)
-</script>
+
+
 {% endblock %}
