@@ -1,4 +1,5 @@
 {% include 'header.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
         <!-- Page Header-->
         <header class="masthead" style="background-image: url({{post.img_url}})">
             <div class="container position-relative px-4 px-lg-5">
@@ -12,7 +13,7 @@
                             <span class="meta">
                                 Posted by
                                 <a href="#!">{{post.author}}</a>
-                                on {{post.date}}
+                                on {{post.date_created}}
                             </span>
                         </div>
                     </div>
@@ -23,34 +24,70 @@
         <article>
     <div class="container">
       <div class="row">
+                {% if post.author == name.username %}
+          <div class="clearfix">
+                    <a class="btn btn-primary float-right" href="{{url_for('controlPanel.edit_post',post_id=post.id)}}">Edit Post</a>
+                {% endif %}
+           </div>
         <div class="col-lg-8 col-md-10 mx-auto">
-
 <!--          #Safe filter applied to the post.body-->
             {%+ if post %}
                             {{ post.body|safe }}
                         {% endif %}
           <hr>
-           <div class="clearfix">
-          <a class="btn btn-primary float-right" href="{{url_for('controlPanel.edit_post',post_id=post.id)}}">Edit Post</a>
-        </div>
+
           </div>
       </div>
     </div>
-            <div class="comments">
-                <div class="container">
-                    <h3>Comments</h3>
+<!--            add comment here-->
+            <div class="show_comment container">
+                <div class="row">
+                    <button id="addComment" type="button" class="btn btn-primary" onclick="showCommentArea()">Add comment here </button>
+                    <div id="commentDiv"  style="display:none;"> {{wtf.quick_form(commentForm, novalidate=True, button_map={"submit": "primary"})}}</div>
+                </div>
+                <div class="row">
+                    {% if post.comments |length >0 %}
+                        <a data-bs-toggle="collapse" href="#comments-{{post.id}}" role="button" >
+                            <small class="text-primary">View {{post.comments|length}} Comments</small>
+                        </a>
+                    {% else %}
+                            <small class="text-muted">No Comments</small>
+                    {% endif %}
+                </div>
+
+            </div>
+<!--show comments -->
+         <div class="collapse" id="comments-{{post.id}}">
+                {% if post.comments %}
+            <div class="card card-body" id="comments-expanded-{{post.id}}">
+                <h3>Comments</h3>
                     {% for comment in post.comments %}
                     <div class="row justify-content-md mt-3">
-                        <div class="col-md">
-                            <div class="border border-secondary border-4" style="padding-left:2.5%">
-                                <p>{{ comment.content|safe }}</p>
+                        <div>
+                            <div class="border border-secondary border-4" >
+                                <div class="col" style="padding-left:1%;">
+<!--                                    <small>{{comment.author | getName}}:</small>-->
+                                        <a href="/posts/{{comment.user.username}}" class="text-primary">{{comment.user.username}}</a>: {{ comment.content|safe }}
+                                </div>
                             </div>
                         </div>
+                        <div>
+<!--                            use jinja customer filter on init py-->
+                            <small class="text-muted">{{comment.date_created | filterDate}}</small>
+                        </div>
                     </div>
-                {% endfor %}
-                </div>
+                    {% endfor %}
             </div>
+                {% endif %}
+         </div>
+
 
   </article>
+<script>
+    function showCommentArea(){
+        document.getElementById("commentDiv").style.display = "block";
+        document.getElementById("addComment").style.display = "none";
+    }
+</script>
         <!-- Footer-->
         {% include 'footer.html' %}

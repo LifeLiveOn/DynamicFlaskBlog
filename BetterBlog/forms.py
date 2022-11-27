@@ -35,6 +35,10 @@ class CreatePostForm(FlaskForm):
     submit = SubmitField(label="submit post")
 
 
+class CommentForm(FlaskForm):
+    body = StringField(label="",validators=[InputRequired("Please enter your comment before submit!"), Length(min=2,max=150)], render_kw={"placeholder": "Enter comments here"})
+    submit = SubmitField("submit comment")
+
 class LoginForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), Length(1, 64), Email("wrong email")])

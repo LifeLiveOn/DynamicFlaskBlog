@@ -18,7 +18,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True)
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
-    date_created = db.Column(db.String(150), default=datetime.now())
+    date_created = db.Column(db.String(150), default=datetime.today())
     posts = db.relationship('Post', backref="user", passive_deletes=True)
     comments = db.relationship('Comment', backref="user", passive_deletes=True)
     is_Author = db.Column(db.Boolean)  # default = false, preventing user from importing post without verify account
@@ -31,7 +31,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), unique=True, nullable=False)
     subtitle = db.Column(db.String(250), nullable=False)
-    date_created = db.Column(db.String(150), default=datetime.now())
+    date_created = db.Column(db.String(150), default=datetime.today())
     body = db.Column(db.Text, nullable=False)
     author = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
@@ -47,7 +47,7 @@ class Comment(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     author = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"),
                        nullable=False)  # check cascade, when it parent delete would result in delete all things that related to it.
-    date_created = db.Column(db.String(150), default=datetime.now())
+    date_created = db.Column(db.String(150), default=datetime.today())
     is_valid = db.Column(db.Boolean)  # to verify comment before getting into the post
 
     def __repr__(self):

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -42,5 +44,15 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(int(id))
+
+    # making a custom filter to get author name but it would have to query from database, which we don't have to use since we can access it from comment.user.username
+    @app.template_filter('getName')
+    def get_author_name(user_id):
+        return User.query.filter_by(id=user_id).first().username
+
+    @app.template_filter('filterDate')
+    def filter_date(date_string):
+        return datetime.strptime(date_string[0:19], "%Y-%m-%d %H:%M:%S")
+
 
     return app
