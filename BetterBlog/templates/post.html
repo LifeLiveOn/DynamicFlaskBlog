@@ -30,11 +30,11 @@
                 {% endif %}
            </div>
         <div class="col-lg-8 col-md-10 mx-auto">
-<!--          #Safe filter applied to the post.body-->
+            <!--          #Safe filter applied to the post.body-->
             {%+ if post %}
-                            {{ post.body|safe }}
-                        {% endif %}
-          <hr>
+            {{ post.body|safe }}
+            {% endif %}
+            <hr>
 
           </div>
       </div>
@@ -46,8 +46,8 @@
                     <div id="commentDiv"  style="display:none;"> {{wtf.quick_form(commentForm, novalidate=True, button_map={"submit": "primary"})}}</div>
                 </div>
                 <div class="row">
-                    {% if post.comments |length >0 %}
-                        <a data-bs-toggle="collapse" href="#comments-{{post.id}}" role="button" >
+                    {%+ if post.comments |length >0 %}
+                    <a data-bs-toggle="collapse" href="#comments-{{post.id}}" role="button" >
                             <small class="text-primary">View {{post.comments|length}} Comments</small>
                         </a>
                     {% else %}
@@ -58,17 +58,30 @@
             </div>
 <!--show comments -->
          <div class="collapse" id="comments-{{post.id}}">
-                {% if post.comments %}
-            <div class="card card-body" id="comments-expanded-{{post.id}}">
+             {%+ if post.comments %}
+             <div class="card card-body" id="comments-expanded-{{post.id}}">
                 <h3>Comments</h3>
                     {% for comment in post.comments %}
                     <div class="row justify-content-md mt-3">
                         <div>
                             <div class="border border-secondary border-4" >
                                 <div class="col" style="padding-left:1%;">
-<!--                                    <small>{{comment.author | getName}}:</small>-->
-                                        <a href="/posts/{{comment.user.username}}" class="text-primary">{{comment.user.username}}</a>: {{ comment.content|safe }}
+                                    <!--                                    <small>{{comment.author | getName}}:</small>-->
+                                    <a href="/posts/{{comment.user.username}}" class="text-primary">{{comment.user.username}}</a>:
+                                    {{ comment.content|safe }}
+                                    <!--                                    check user before allow them to delete comments-->
+                                    {%+ if comment.user.username == name.username %}
+                                    <a data-bs-toggle="collapse" href="#comment-{{comment.id}}" role="button">
+                                        <small class="d-flex flex-row-reverse text-secondary">Tuy Chon</small>
+                                    </a>
+                                    <div class="collapse" id="comment-{{comment.id}}">
+                                        <small><a class="d-flex flex-row-reverse text-primary"
+                                                  href={{url_for('views.del_comment',comment_id=comment.id,post_id=post.id)}}>Delete
+                                            this comment?</a></small>
+                                        {% endif %}
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
                         <div>

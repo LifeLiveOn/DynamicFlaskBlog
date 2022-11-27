@@ -1,12 +1,13 @@
 import datetime
+from datetime import date
 
 from flask import Blueprint, render_template, redirect, url_for, request
-from datetime import date
+from flask_login import login_required, current_user
+
 from BetterBlog.scripts import send_email, strip_invalid_html
-from .models import Post, Comment, User
 from . import db
 from .forms import CreatePostForm, CommentForm
-from flask_login import login_required, current_user, AnonymousUserMixin
+from .models import Post, Comment
 
 view = Blueprint("views", "__name__")
 
@@ -102,3 +103,19 @@ def get_user_post(user):
         return render_template("handler/404.html")
     return render_template("index.html", all_posts=posts, name="GUEST")
 
+
+# delete comments
+@view.route('delete/<comment_id>/<post_id>')
+@login_required
+def del_comment(comment_id, post_id):
+    try:
+        comment = Comment.query.filter_by(id=comment_id).first()
+        if comment.author == current_user.id:
+            db.session.delete(comment)
+            db.session.commit()
+        else:
+            print("User try to delete this comment without permission: userID: " + current_user.id)
+    except Exception as e:
+        print(e)
+        return render_template("handler/404.html")
+    return redirect(url_for('views.post', post_id=post_id))
