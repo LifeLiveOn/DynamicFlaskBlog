@@ -1,17 +1,14 @@
-import functools
-
 from flask import Blueprint, redirect, render_template, flash, url_for, request
 from flask_login import login_required, current_user
 from sqlalchemy.exc import SQLAlchemyError
-
-from .models import User, Post
-from .forms import User as UserForm, CreatePostForm
-from .models import db
-from .scripts import strip_invalid_html
 from sqlalchemy.orm import sessionmaker
 
+from .forms import User as UserForm, CreatePostForm
+from .models import User, Post
+from .models import db
+from .scripts import strip_invalid_html
+
 session = sessionmaker()()
-from .views import view
 
 manage = Blueprint("controlPanel", "__name__")
 USER_PER_PAGE = 5
