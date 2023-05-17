@@ -1,16 +1,17 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends 'admin/adminbase.html' %}
 {% block content %}
+{% block sections %}{% endblock %}
 <!--Get flash message here and send to client-->
 <div class="fixed-top">
-  {% with messages = get_flashed_messages(category_filter=["success"]) %}
+    {% with messages = get_flashed_messages(category_filter=["success"]) %}
     {% if messages %}
-        {% for message in messages %}
-            <div id="overlay_flash" class="alert alert-success alert-dismissible fade show" role="alert">
-                {{message}}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
+    {% for message in messages %}
+    <div id="overlay_flash" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
     {% endif %}
   {% endwith %}
 </div>

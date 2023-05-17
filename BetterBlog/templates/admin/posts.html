@@ -1,59 +1,74 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends 'admin/adminbase.html' %}
+
+{% block sections %}
+<div class="px-2">
+    <h1>Adjust your posts here</h1>
+</div>
+{% endblock %}
+
 {% block content %}
 <!--Get flash message here and send to client-->
 <div class="fixed-top">
-  {% with messages = get_flashed_messages(category_filter=["success"]) %}
+    {% with messages = get_flashed_messages(category_filter=["success"]) %}
     {% if messages %}
-        {% for message in messages %}
-            <div id="overlay_flash" class="alert alert-success alert-dismissible fade show" role="alert">
-                {{message}}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
+    {% for message in messages %}
+    <div id="overlay_flash" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
     {% endif %}
-  {% endwith %}
+    {% endwith %}
 </div>
 
-<!--Table content to summary the post -->
-<div class="container" style="margin-right: 0px;padding-right: 0px;">
-        <div class="row justify-content-end">
-            <div class="col-4">
-                <button type="button" class="btn btn-primary" style="float:right;"><a href="{{url_for('views.create_post')}}">Create new Post</a></button>
-            </div>
+
+<!--button to create new post -->
+
+<caption class="container">
+    <div class="row justify-content-start">
+        <div class="col-4 justify-content-start" style="display:contents;">
+            <button type="button" class="btn btn-primary" style="float:right;"><a
+                    href="{{url_for('views.create_post')}}">Create new Post</a></button>
         </div>
-</div>
-<div class="table-responsive">
-    <table class="table table-hover table-sm">
-        <thead class="thead" id="thead_dark">
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Subtitle</th>
-                <th>Date Created</th>
-                <th>Actions</th>
-            </tr>
+    </div>
+</caption>
+
+<!--Table content to summary the post -->
+<div class="table-responsive ">
+    <table class="table table-hover table-sm ">
+        <thead class="thead " id="thead_dark">
+        <tr class="text-center">
+            <th>ID</th>
+            <th>Title</th>
+            <th>Subtitle</th>
+            <th>Date Created</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
-            {% for post in posts.items %}
-            <tr>
-                <th scope="row">{{ loop.index }}</th>
-                <td>{{ post.title }}</td>
-                <td>{{post.subtitle}}</td>
-                <td>{{ post.date_created }}</td>
-                <td>
-                                <a href={{url_for('controlPanel.edit_post',post_id=post.id)}}>
-                                    <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
-                                </a>
-								<button id="{{post.id}}" name="DeletePost" onclick="document.getElementById('deletePostModal').style.display='block';document.getElementById('delete_post_id').setAttribute('value',this.id)">
-                                    <i class="material-icons" data-toggle="tooltip" title="Delete" >&#xE872;</i>
-                                </button>
-                </td>
-            </tr>
-            {% endfor %}
+        {% for post in posts.items %}
+        <tr class="text-center">
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ post.title }}</td>
+            <td>{{post.subtitle}}</td>
+            <td>{{ post.date_created }}</td>
+            <td>
+                <a href={{url_for('controlPanel.edit_post',post_id=post.id)}}>
+                    <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                </a>
+                <button id="{{post.id}}" name="DeletePost"
+                        onclick="document.getElementById('deletePostModal').style.display='block';document.getElementById('delete_post_id').setAttribute('value',this.id)">
+                    <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
         </tbody>
     </table>
 </div>
+
+
 
 <!-- Pagination Links-->
 <div class="text-right">

@@ -1,19 +1,26 @@
-from flask import Blueprint, redirect, render_template, flash, url_for
 from datetime import date
+
+from flask import Blueprint, redirect, render_template, flash, url_for
+from flask_login import login_user, logout_user, login_required
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from BetterBlog.forms import Account, LoginForm
 from . import db
 from .models import User
-
-from flask_login import login_user, current_user, logout_user, login_remembered, login_required
-
-from werkzeug.security import generate_password_hash, check_password_hash
 
 auth = Blueprint("auth", "__name__")
 
 
 @auth.route('/register', methods=['GET', 'POST'])
-def register():
-    form = Account()  # send this form structure to the html template, get the data from it as well, reduce the code by 3x time
+def registerUser():
+    """
+    Register route for user registration.
+
+    GET: Renders the 'auth/register.html' template with the 'Account' form.
+    POST: Handles the form submission for user registration. Validates the form data,
+    checks for existing email and username, creates a new user, and logs the user in.
+    """
+    form = Account()
     if form.validate_on_submit():
         email_exists = User.query.filter_by(email=form.email.data).first()
         user_exists = User.query.filter_by(username=form.username.data).first()
@@ -24,7 +31,7 @@ def register():
         else:
             new_user = User(email=form.email.data, username=form.username.data,
                             password=generate_password_hash(form.password.data, method="sha256"),
-                            date_created=date.today().strftime("%B %d, %Y"),is_Author=False)
+                            date_created=date.today().strftime("%B %d, %Y"), is_Author=False)
             db.session.add(new_user)
             db.session.commit()
             flash("User create!")
@@ -35,7 +42,14 @@ def register():
 
 
 @auth.route('/login', methods=['GET', 'POST'])
-def login():
+def loginUser():
+    """
+    Login route for user login.
+
+    GET: Renders the 'auth/login.html' template with the 'LoginForm'.
+    POST: Handles the form submission for user login. Validates the form data,
+    checks the credentials, and logs the user in if the credentials are valid.
+    """
     login_form = LoginForm()
     if login_form.validate_on_submit():
         user = User.query.filter_by(email=login_form.email.data).first()
@@ -53,6 +67,11 @@ def login():
 
 @auth.route('/logout')
 @login_required
-def logout():
+def logoutUser():
+    """
+    Logout route for user logout.
+
+    Logs out the currently logged-in user and redirects to 'views.get_all_posts' route.
+    """
     logout_user()
     return redirect(url_for("views.get_all_posts"))

@@ -1,106 +1,128 @@
 {% include 'header.html' %}
+<script src="../static/js/scripts.js"></script>
 {% import "bootstrap/wtf.html" as wtf %}
-        <!-- Page Header-->
-        <header class="masthead" style="background-image: url({{post.img_url}})">
-            <div class="container position-relative px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-md-10 col-lg-8 col-xl-7">
-<!--                        #Safe filter applied to the post.body-->
+<!-- Page Header-->
+<header class="masthead" style="background-image: url({{post.img_url}})">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <!--                        #Safe filter applied to the post.body-->
 
-                        <div class="post-heading">
-                            <h1>{{post.title}}</h1>
-                            <h2 class="subheading">{{post.subtitle}}</h2>
-                            <span class="meta">
+                <div class="post-heading">
+                    <h1>{{post.title}}</h1>
+                    <h2 class="subheading">{{post.subtitle}}</h2>
+                    <span class="meta">
                                 Posted by
                                 <a href="#!">{{post.author}}</a>
                                 on {{post.date_created}}
                             </span>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </header>
-        <!-- Post Content-->
-        <article>
-    <div class="container">
-      <div class="row">
-                {% if post.author == name.username %}
-          <div class="clearfix">
-                    <a class="btn btn-primary float-right" href="{{url_for('controlPanel.edit_post',post_id=post.id)}}">Edit Post</a>
-                {% endif %}
-           </div>
-        <div class="col-lg-8 col-md-10 mx-auto">
-            <!--          #Safe filter applied to the post.body-->
-            {%+ if post %}
-            {{ post.body|safe }}
-            {% endif %}
-            <hr>
-
-          </div>
-      </div>
+        </div>
     </div>
-<!--            add comment here-->
-            <div class="show_comment container">
-                <div class="row">
-                    <button id="addComment" type="button" class="btn btn-primary" onclick="showCommentArea()">Add comment here </button>
-                    <div id="commentDiv"  style="display:none;"> {{wtf.quick_form(commentForm, novalidate=True, button_map={"submit": "primary"})}}</div>
+</header>
+<!-- Post Content-->
+<article>
+    <div>
+        <div class="row">
+            {% if post.author == name.username %}
+            <div class="clearfix">
+                <a class="btn btn-primary float-right" href="{{url_for('controlPanel.edit_post',post_id=post.id)}}">Edit
+                    Post</a>
+                {% endif %}
+            </div>
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <!--          #Safe filter applied to the post.body-->
+                {%+ if post %}
+                <div class="lazy">
+                    {{ post.body|safe }}
                 </div>
-                <div class="row">
-                    {%+ if post.comments |length >0 %}
-                    <a data-bs-toggle="collapse" href="#comments-{{post.id}}" role="button" >
-                            <small class="text-primary">View {{post.comments|length}} Comments</small>
-                        </a>
-                    {% else %}
-                            <small class="text-muted">No Comments</small>
-                    {% endif %}
-                </div>
+
+                {% endif %}
+                <hr>
 
             </div>
-<!--show comments -->
-         <div class="collapse" id="comments-{{post.id}}">
-             {%+ if post.comments %}
-             <div class="card card-body" id="comments-expanded-{{post.id}}">
-                <h3>Comments</h3>
-                    {% for comment in post.comments %}
-                    <div class="row justify-content-md mt-3">
-                        <div>
-                            <div class="border border-secondary border-4" >
-                                <div class="col" style="padding-left:1%;">
-                                    <!--                                    <small>{{comment.author | getName}}:</small>-->
-                                    <a href="/posts/{{comment.user.username}}" class="text-primary">{{comment.user.username}}</a>:
-                                    {{ comment.content|safe }}
-                                    <!--                                    check user before allow them to delete comments-->
-                                    {%+ if comment.user.username == name.username %}
-                                    <a data-bs-toggle="collapse" href="#comment-{{comment.id}}" role="button">
-                                        <small class="d-flex flex-row-reverse text-secondary">Tuy Chon</small>
-                                    </a>
-                                    <div class="collapse" id="comment-{{comment.id}}">
-                                        <small><a class="d-flex flex-row-reverse text-primary"
-                                                  href={{url_for('views.del_comment',comment_id=comment.id,post_id=post.id)}}>Delete
-                                            this comment?</a></small>
-                                        {% endif %}
-                                    </div>
-                                </div>
+        </div>
+    </div>
+    <!--            add comment here-->
+    <div class="container">
+            <span class="h3" id="likes-count-{{post.id}}">
+                {{post.likes|length}}
+            </span>
+        &nbsp
+        {% if name.id in post.likes|map(attribute="author")|list %}
+        <i class="fa-solid fa-thumbs-up fa-2x" id="like-button-{{post.id}}" onclick="like({{post.id}})"></i>
+        {% else %}
+        <i class="fa-regular fa-thumbs-up fa-2x" id="like-button-{{post.id}}" onclick="like({{post.id}})"></i>
+        {% endif %}
 
-                            </div>
+    </div>
+
+    <div class="show_comment container">
+
+        <div class="row">
+            {%+ if post.comments | length >0 %}
+            <a data-bs-toggle="collapse" href="#comments-{{post.id}}" role="button">
+                <small class="text-primary">View {{post.comments|length}} Comments</small>
+            </a>
+            {% else %}
+            <small class="text-muted">No Comments</small>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <div id="commentsContainer">
+        <div class="collapse" id="comments-{{ post.id }}">
+            {% if post.comments %}
+            <h3 class="comments-header">Comments</h3>
+            <div class="comments-list">
+                {% for comment in post.comments %}
+                <div class="comment-box">
+                    <div class="comment">
+                        <div class="comment-header">
+                            <a class="comment-author" href="/posts/{{ comment.user.username }}">
+                                {{ comment.user.username }}
+                            </a>
+                            {% if comment.user.username == name.username %}
+                            <a class="comment-delete"
+                               href="{{ url_for('views.del_comment', comment_id=comment.id, post_id=post.id) }}">
+                                Delete
+                            </a>
+                            {% endif %}
                         </div>
-                        <div>
-<!--                            use jinja customer filter on init py-->
-                            <small class="text-muted">{{comment.date_created | filterDate}}</small>
+                        <div class="comment-content">
+                            {{ comment.content | safe }}
+                        </div>
+                        <div class="comment-date">
+                            <small class="text-muted">{{ comment.date_created | filterDate }}</small>
                         </div>
                     </div>
-                    {% endfor %}
+                </div>
+                {% endfor %}
             </div>
-                {% endif %}
-         </div>
+            {% else %}
+            <h3 class="no-comments">No comments yet</h3>
+            {% endif %}
+        </div>
+        <div class="addCommentContainer">
+            <button class="btn btn-primary" id="addComment" type="button">Add
+                comment here
+            </button>
+            <div class="comment-form-container" id="commentDiv" style="display:none;">
+                <form id="commentForm" onsubmit=" addComment({{post.id}}); return false;">
+                    {{ commentForm.csrf_token }}
+                    <div class="form-group">
+                        <textarea class="form-control" cols="50" name="body" placeholder="Enter your comment" required
+                                  rows="4"></textarea>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
 
+    </div>
+</article>
 
-  </article>
-<script>
-    function showCommentArea(){
-        document.getElementById("commentDiv").style.display = "block";
-        document.getElementById("addComment").style.display = "none";
-    }
-</script>
-        <!-- Footer-->
-        {% include 'footer.html' %}
+<!-- Footer-->
+{% include 'footer.html' %}

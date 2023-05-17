@@ -1,7 +1,10 @@
 import smtplib  # sending emails
+
 import bleach  # sanitize html escaping
+
 OWN_EMAIL = "thanhtester123@outlook.com"
 OWN_PW = "Thanh123@"
+
 
 def send_email(name, email, phone, message):
     email_message = f"Subject:New Message\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage:{message}"
@@ -11,7 +14,7 @@ def send_email(name, email, phone, message):
         connection.sendmail(OWN_EMAIL, email, email_message)
 
 
-## strips invalid tags/attributes
+# strips invalid tags/attributes
 def strip_invalid_html(content):
     allowed_tags = ['a', 'abbr', 'acronym', 'address', 'b', 'br', 'div', 'dl', 'dt',
                     'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img',
