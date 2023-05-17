@@ -1,9 +1,14 @@
-import smtplib  # sending emails
+import os
+import smtplib
 
-import bleach  # sanitize html escaping
+import bleach
+from dotenv import load_dotenv
 
-OWN_EMAIL = "thanhtester123@outlook.com"
-OWN_PW = "Thanh123@"
+# Load environment variables from .env file
+load_dotenv()
+
+OWN_EMAIL = os.getenv('OWN_EMAIL')
+OWN_PW = os.getenv('OWN_PW')
 
 
 def send_email(name, email, phone, message):

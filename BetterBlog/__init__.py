@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+from dotenv import load_dotenv
 from flask import Flask, request, url_for, send_from_directory
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
@@ -11,6 +12,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 DB_NAME = "posts.db"
 db = SQLAlchemy()
+load_dotenv()
 
 
 def create_app():
@@ -20,15 +22,15 @@ def create_app():
     app.config['UPLOADED_PATH'] = os.path.join(basedir, 'uploads')
     migrate = Migrate(app, db)  # run flask db init
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = "hjaowfoawhjadhw12312@@#"
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'  # use sqlite with flask alchemy
     app.config['CKEDITOR_FILE_UPLOADER'] = 'upload'  # calling upload route
 
     db.init_app(app)
 
-    ckeditor = CKEditor(app)
-    bootstrap = Bootstrap(app)
+    CKEditor(app)
+    Bootstrap(app)
 
     from .views import view
 
