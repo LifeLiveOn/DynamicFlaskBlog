@@ -78,7 +78,7 @@
             <h3 class="comments-header">Comments</h3>
             <div class="comments-list">
                 {% for comment in post.comments %}
-                <div class="comment-box">
+                <div class="comment-box" id="commentID-{{comment.id}}">
                     <div class="comment">
                         <div class="comment-header">
                             <a class="comment-author" href="/posts/{{ comment.user.username }}">
@@ -86,7 +86,7 @@
                             </a>
                             {% if comment.user.username == name.username %}
                             <a class="comment-delete"
-                               href="{{ url_for('views.del_comment', comment_id=comment.id, post_id=post.id) }}">
+                               onclick="deleteComment('{{ comment.id }}', '{{ post.id }}'); return false;">
                                 Delete
                             </a>
                             {% endif %}
@@ -105,12 +105,13 @@
             <h3 class="no-comments">No comments yet</h3>
             {% endif %}
         </div>
+
         <div class="addCommentContainer">
             <button class="btn btn-primary" id="addComment" type="button">Add
                 comment here
             </button>
             <div class="comment-form-container" id="commentDiv" style="display:none;">
-                <form id="commentForm" onsubmit=" addComment({{post.id}}); return false;">
+                <form id="commentForm" onsubmit=" addComment('{{post.id}}'); return false;">
                     {{ commentForm.csrf_token }}
                     <div class="form-group">
                         <textarea class="form-control" cols="50" name="body" placeholder="Enter your comment" required

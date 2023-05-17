@@ -23,9 +23,8 @@ def get_all_posts():
         rendered HTML template
     """
     posts = Post.query.all()
-    if current_user.is_authenticated:
-        return render_template("index.html", all_posts=posts, name=current_user)
-    return render_template("index.html", all_posts=posts, name="GUEST")
+    name = get_user_name()
+    return render_template("index.html", all_posts=posts, name=name)
 
 
 @view.route('/about')
@@ -36,7 +35,8 @@ def get_about():
     Returns:
         rendered HTML template
     """
-    return render_template("about.html", name=current_user)
+    name = get_user_name()
+    return render_template("about.html", name=name)
 
 
 @view.route('/contact', methods=["GET", "POST"])
@@ -49,12 +49,13 @@ def send_contact():
     Returns:
         rendered HTML template
     """
+    name = get_user_name()
     if request.method == "POST":
         data = request.form
         if data["name"] and data["email"] and data["phone"] and data["message"] != None:
             send_email(data["name"], data["email"], data["phone"], data["message"])
             return redirect(url_for('views.send_contact'))
-    return render_template("handler/contact.html", msg_sent=False, name=current_user)
+    return render_template("handler/contact.html", msg_sent=False, name=name)
 
 
 @view.route('/post')
@@ -65,6 +66,7 @@ def show_first_post():
     Returns:
         rendered HTML template
     """
+
     requested_post = db.session.query(Post).filter_by(id=1).first()
     if requested_post:
         return redirect(url_for('views.get_post', post_id=1))
@@ -84,11 +86,12 @@ def get_post(post_id):
         rendered HTML template or JSON response
     """
     comment = CommentForm()
+    name = get_user_name()
     requested_post = 0
     if request.method == "GET":
         try:
             requested_post = Post.query.get(post_id)
-            return render_template("post.html", post=requested_post, name=current_user, commentForm=comment)
+            return render_template("post.html", post=requested_post, name=name, commentForm=comment)
         except Exception as e:
             print(e)
             return render_template("handler/404.html")
@@ -105,6 +108,7 @@ def create_post():
     Returns:
         rendered HTML template or redirection
     """
+    name = get_user_name()
     if current_user.is_Author:
         form = CreatePostForm(author=current_user.username)  # create post with current username as author
         if form.validate_on_submit():
@@ -114,13 +118,13 @@ def create_post():
                 subtitle=form.subtitle.data,
                 body=strip_invalid_html(body),
                 author=form.author.data,
-                img_url=form.img_url.data,
+                img_url=form.img_url.data if form.img_url.data else "",
                 date_created=date.today()
             )
             db.session.add(new_post)
             db.session.commit()
             return redirect(url_for('views.get_all_posts'))
-        return render_template("handler/createpost.html", form=form, name=current_user)
+        return render_template("handler/createpost.html", form=form, name=name)
     else:
         return "<h1>You need to be verified from admin to access this option!</h1>"
 
@@ -137,13 +141,14 @@ def get_user_post(user):
     Returns:
         rendered HTML template
     """
+    name = get_user_name()
     try:
         posts = Post.query.filter_by(author=user).all()
         print(posts)
     except Exception as e:
         print(e)
         return render_template("handler/404.html")
-    return render_template("index.html", all_posts=posts, name="GUEST")
+    return render_template("index.html", all_posts=posts, name=name)
 
 
 @view.route('/post/<int:post_id>/add_comment', methods=["POST"])
@@ -172,6 +177,7 @@ def add_comment(post_id):
         try:
             db.session.add(new_comment)
             db.session.commit()
+            print(new_comment)
             return jsonify({
                 'message': 'Comment added successfully',
                 "comment": {
@@ -188,30 +194,39 @@ def add_comment(post_id):
     return jsonify({'message': 'Invalid comment data'})
 
 
-@view.route('delete/<comment_id>/<post_id>')
+@view.route('/delete/<comment_id>/<post_id>', methods=['DELETE'])
 @login_required
 def del_comment(comment_id, post_id):
     """
-    Deletes a comment based on its ID and redirects back to the post.
+    Deletes a comment based on its ID and returns the deleted comment as JSON.
 
     Args:
         comment_id (str): ID of the comment to be deleted
         post_id (str): ID of the post that the comment belongs to
 
     Returns:
-        redirection
+        JSON response containing the deleted comment
     """
-    try:
-        comment = Comment.query.filter_by(id=comment_id).first()
-        if comment.author == current_user.id:
-            db.session.delete(comment)
-            db.session.commit()
-        else:
-            print("User try to delete this comment without permission: userID: " + current_user.id)
-    except Exception as e:
-        print(e)
-        return render_template("handler/404.html")
-    return redirect(url_for('views.get_post', post_id=post_id))
+    if request.method == "DELETE":
+        try:
+            comment = Comment.query.filter_by(id=comment_id).first()
+            if comment.author == current_user.id:
+                db.session.delete(comment)
+                db.session.commit()
+                return jsonify({'message': 'Comment deleted successfully',
+                                'comment': {
+                                    'author': comment.author,
+                                    'content': comment.content,
+                                    'post': comment.post_id,
+                                    'date': comment.date_created
+                                }
+                                })
+            else:
+                print("User tried to delete this comment without permission: userID: " + current_user.id)
+        except Exception as e:
+            print(e)
+            return render_template("handler/404.html")
+    return jsonify({'message': 'Failed to delete comment'})
 
 
 @view.route('/like-post/<post_id>', methods=["GET"])
@@ -242,3 +257,15 @@ def like_post(post_id):
             db.session.commit()
         return jsonify({"likes": len(post.likes), "liked": current_user.id in map(lambda x: x.author,
                                                                                   post.likes)})  # check if current user like the post or not
+
+
+def get_user_name():
+    """
+    Helper function to get the user name or return "GUEST" if the user is not authenticated.
+
+    Returns:
+        user name or "GUEST"
+    """
+    if current_user.is_authenticated:
+        return current_user.username
+    return "GUEST"

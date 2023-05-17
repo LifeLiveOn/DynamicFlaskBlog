@@ -77,6 +77,9 @@ function appendComment(author, content, date) {
             <div class="comment-header">
                 <a class="comment-author" href="#">${author}</a>
             </div>
+            <a class="comment-delete">
+                 Refresh page to use Delete
+            </a>
             <div class="comment-content">
                 ${content}
             </div>
@@ -123,6 +126,27 @@ function addComment(postId) {
                 commentInput.value = '';
             } else {
                 // Display an error message if the comment was not added successfully
+                console.log('Error:', data.message);
+            }
+        })
+        .catch(error => {
+            console.log('Error:', error);
+        });
+}
+
+function deleteComment(commentId, postId) {
+    fetch(`/delete/${commentId}/${postId}`, {
+        method: 'DELETE',
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.message === 'Comment deleted successfully') {
+                const commentElement = document.getElementById(`commentID-${commentId}`);
+                if (commentElement) {
+                    commentElement.remove();
+                }
+            } else {
                 console.log('Error:', data.message);
             }
         })

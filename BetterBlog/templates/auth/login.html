@@ -1,14 +1,14 @@
-{% include "header.html" %}
+{% extends 'base.html' %}
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
 Login
 {% endblock %}
 
-
+{% block content %}
 <div class="container">
-		<h1>Login</h1>
-        {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+    <h1>Login</h1>
+    {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+    <p>Don't have an account? <a href="{{ url_for('auth.registerUser') }}">Sign Up</a></p>
 </div>
-
-{% include "footer.html" %}
+{% endblock %}

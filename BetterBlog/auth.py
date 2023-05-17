@@ -62,7 +62,7 @@ def loginUser():
                 flash("Invalid credential!", category="error")
         else:
             flash("Invalid credential!", category="error")
-    return render_template('auth/login.html', form=login_form)
+    return render_template('auth/login.html', form=login_form, name="SIGNUP")
 
 
 @auth.route('/logout')

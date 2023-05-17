@@ -2,15 +2,13 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
-Login
+Registration
 {% endblock %}
 
 {% block content %}
-<body>
 <div class="container">
-        {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+    <h1>Registration</h1>
+    {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+    <p>Already have an account? <a href="{{ url_for('auth.loginUser') }}">Log In</a></p>
 </div>
-</body>
-
-
 {% endblock %}

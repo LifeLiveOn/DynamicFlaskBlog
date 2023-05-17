@@ -21,13 +21,18 @@
     </div>
   </header>
 <div class="container">
-    <!--    # IF statement to differentiate Add and Edit-->
-
-      {{ ckeditor.load() }}
-                {{ ckeditor.config(name='body') }}
+    <!-- IF statement to differentiate Add and Edit -->
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='body') }}
     {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
 
-
+    <!-- Display alternative text if img_url is blank -->
+    {% if not form.img_url.data %}
+    <p>Copy this url if you don't know what to put for your background at the moment</p>
+    https://rb.gy/d7u3c
+    <!--    <img src="https://rb.gy/d7u3c">-->
+    {% endif %}
 </div>
+
 
 {% include "footer.html" %}
