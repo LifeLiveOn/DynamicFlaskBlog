@@ -1,6 +1,10 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends 'admin/adminbase.html' %}
 
+{% block sidebar %}
+<!-- Include the sidebar content here if needed -->
+{% endblock %}
+
 {% block sections %}
 <div class="px-2">
     <h1>Adjust your posts here</h1>
@@ -22,7 +26,6 @@
     {% endwith %}
 </div>
 
-
 <!--button to create new post -->
 
 <caption class="container">
@@ -30,11 +33,14 @@
         <div class="col-4 justify-content-start" style="display:contents;">
             <button type="button" class="btn btn-primary" style="float:right;"><a
                     href="{{url_for('views.create_post')}}">Create new Post</a></button>
+            <a class="btn btn-primary" href="{{ url_for('adminPanel.dashboard') }}">Go back to Dashboard</a>
+
         </div>
     </div>
 </caption>
 
 <!--Table content to summary the post -->
+
 <div class="table-responsive ">
     <table class="table table-hover table-sm ">
         <thead class="thead " id="thead_dark">
@@ -54,12 +60,12 @@
             <td>{{post.subtitle}}</td>
             <td>{{ post.date_created }}</td>
             <td>
-                <a href={{url_for('controlPanel.edit_post',post_id=post.id)}}>
-                    <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                <a href={{url_for('adminPanel.edit_post',post_id=post.id)}}>
+                    <i class="fa-solid fa-pen-to-square" title="Edit"></i>
                 </a>
                 <button id="{{post.id}}" name="DeletePost"
                         onclick="document.getElementById('deletePostModal').style.display='block';document.getElementById('delete_post_id').setAttribute('value',this.id)">
-                    <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                    <i class="fa-solid fa-trash" data-toggle="tooltip" title="Delete"></i>
                 </button>
             </td>
         </tr>
@@ -71,8 +77,9 @@
 
 
 <!-- Pagination Links-->
+
 <div class="text-right">
-    <a href="{{ url_for('controlPanel.posts', page=pagination.prev_num) }}"
+    <a href="{{ url_for('adminPanel.posts', page=pagination.prev_num) }}"
        class="btn btn-outline-dark
        {% if pagination.page == 1 %}disabled{% endif %}">
         &laquo;
@@ -82,21 +89,21 @@
 {% if page_num %}
 <!-- Check for the active page and set the link to "Active"-->
             {% if pagination.page == page_num %}
-            <a href="{{ url_for('controlPanel.posts', page=page_num) }}"
-               class="btn btn-dark">
-                {{ page_num }}
-            </a>
+    <a class="btn btn-dark"
+       href="{{ url_for('adminPanel.posts', page=page_num) }}">
+        {{ page_num }}
+    </a>
             {% else %}
-            <a href="{{ url_for('controlPanel.posts', page=page_num) }}"
-               class="btn btn-outline-dark">
-                {{ page_num }}
-            </a>
+    <a class="btn btn-outline-dark"
+       href="{{ url_for('adminPanel.posts', page=page_num) }}">
+        {{ page_num }}
+    </a>
             {% endif %}
         {% else %}
             ...
         {% endif %}
     {% endfor %}
-    <a href="{{ url_for('controlPanel.posts', page=pagination.next_num) }}"
+    <a href="{{ url_for('adminPanel.posts', page=pagination.next_num) }}"
        class="btn btn-outline-dark
        {% if pagination.page == pagination.pages %}disabled{% endif %}">
         &raquo;
@@ -111,17 +118,19 @@
 	<div id="deletePostModal" class="modal">
         <span onclick="document.getElementById('deletePostModal').style.display='none'" class="close" title="Close Modal">&times;</span>
 		<div class="modal-dialog">
-				<form class="modal-content" action={{url_for('controlPanel.delete_post')}} method="post">
-					<div class="modal-header">
-						<h4 class="modal-title">Delete Authors</h4>
-						<button type="button" onclick="document.getElementById('deletePostModal').style.display='none'" >&times;</button>
-					</div>
-					<div class="modal-body">
-						<p>Are you sure you want to delete these Records?</p>
-						<p class="text-warning"><small>This action cannot be undone.</small></p>
-					</div>
-					<div class="modal-footer">
-<!--                        https://stackoverflow.com/questions/19794695/flask-python-buttons    -->
+            <form action={{url_for('adminPanel.delete_post')}} class="modal-content" method="post">
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete Authors</h4>
+                    <button onclick="document.getElementById('deletePostModal').style.display='none'" type="button">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete these Records?</p>
+                    <p class="text-warning"><small>This action cannot be undone.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <!--                        https://stackoverflow.com/questions/19794695/flask-python-buttons    -->
 						<input type="button" onclick="document.getElementById('deletePostModal').style.display='none'" class="btn btn-default" data-dismiss="modal" value="Cancel">
                         <input type="hidden" id="delete_post_id" name="delete_post">
 						<input type="submit"  class="btn btn-danger" value="Delete">

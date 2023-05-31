@@ -1,9 +1,12 @@
 import datetime
 from datetime import date
 
+import sqlalchemy.exc as db_exceptions
 from flask import Blueprint, render_template, redirect, url_for, request, jsonify
 from flask_lazyviews import LazyViews
 from flask_login import login_required, current_user
+from sqlalchemy import desc, func
+from sqlalchemy import or_
 
 from BetterBlog.scripts import send_email, strip_invalid_html
 from . import db
@@ -15,14 +18,14 @@ lazy = LazyViews(view)
 
 
 @view.route('/')
-def get_all_posts():
+def getHomePage():
     """
     Renders the index.html template with all the posts if the user is authenticated, otherwise renders as a guest.
 
     Returns:
         rendered HTML template
     """
-    posts = Post.query.all()
+    posts = Post.query.outerjoin(Post.likes).group_by(Post.id).order_by(desc(func.count(Like.id))).limit(5).all()
     name = get_user_name()
     return render_template("index.html", all_posts=posts, name=name)
 
@@ -123,7 +126,7 @@ def create_post():
             )
             db.session.add(new_post)
             db.session.commit()
-            return redirect(url_for('views.get_all_posts'))
+            return redirect(url_for('views.getHomePage'))
         return render_template("handler/createpost.html", form=form, name=name)
     else:
         return "<h1>You need to be verified from admin to access this option!</h1>"
@@ -149,6 +152,33 @@ def get_user_post(user):
         print(e)
         return render_template("handler/404.html")
     return render_template("index.html", all_posts=posts, name=name)
+
+
+@view.route('/posts', methods=["GET"])
+def getAllPost():
+    name = get_user_name()
+    try:
+        page = request.args.get('page', 1, type=int)
+        per_page = 5  # Number of posts per page
+
+        # Get the search query parameter
+        search_query = request.args.get('q', '')
+
+        if search_query:
+            # Perform search based on title or content
+            query = Post.query.filter(
+                or_(Post.title.ilike(f"%{search_query}%"), Post.body.ilike(f"%{search_query}%")))
+            pagination = query.order_by(Post.id).paginate(page=page, per_page=per_page, error_out=False)
+        else:
+            # Retrieve all posts
+            pagination = Post.query.order_by(Post.id).paginate(page=page, per_page=per_page, error_out=False)
+
+        total_pages = pagination.pages
+    except db_exceptions.SQLAlchemyError as e:
+        print(e)
+        return render_template("handler/404.html")
+    return render_template("archive.html", posts=pagination.items, name=name, pagination=pagination,
+                           total_pages=total_pages, search_query=search_query)
 
 
 @view.route('/post/<int:post_id>/add_comment', methods=["POST"])

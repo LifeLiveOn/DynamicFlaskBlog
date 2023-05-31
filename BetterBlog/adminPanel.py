@@ -1,34 +1,49 @@
-from flask import Blueprint, redirect, render_template, flash, url_for, request
-from flask_login import login_required, current_user
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import sessionmaker
+from functools import wraps
 
-from .forms import User as UserForm, CreatePostForm
+from flask import Blueprint, render_template, flash, request
+from flask import session, redirect, url_for
+from flask_login import current_user
+from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.security import check_password_hash
+
+from .forms import User as UserForm, CreatePostForm, LoginForm
 from .models import User, Post
 from .models import db
 from .scripts import strip_invalid_html
 
-session = sessionmaker()()
-
-manage = Blueprint("controlPanel", "__name__")
+manage = Blueprint("adminPanel", "__name__")
 # mean that showing how many user on the table range per page
 USER_PER_PAGE = 5
 
 
+def admin_required(route_function):
+    @wraps(route_function)
+    def decorated_function(*args, **kwargs):
+        if session.get('ADMIN_SESSION_KEY') is True:
+            # Admin is logged in
+            return route_function(*args, **kwargs)
+        else:
+            # Admin is not logged in
+            # Redirect to admin login page or show unauthorized access message
+            return redirect(url_for('adminPanel.login'))
+
+    return decorated_function
+
+
 @manage.route('/')
-@login_required
+@admin_required
 def dashboard():
     """
-        Route for the admin dashboard.
+    Route for the admin dashboard.
 
-        Returns:
-            rendered template: admin/adminbase.html
-        """
+    Returns:
+        rendered template: admin/adminbase.html
+    """
     return render_template("admin/adminbase.html")
 
 
 @manage.route('/users')
-@login_required
+@admin_required
 def users():
     """
     Route for displaying users in the admin control panel.
@@ -44,7 +59,7 @@ def users():
 
 
 @manage.route('/users/<int:user_id>', methods=["GET", "POST"])
-@login_required
+@admin_required
 def edit_user(user_id):
     """
         Route for editing a user in the admin control panel.
@@ -69,12 +84,12 @@ def edit_user(user_id):
         except SQLAlchemyError:
             print("unexpected error")
         flash("LOG IN SUCCESS !", category="success")
-        return redirect(url_for('controlPanel.users'))
+        return redirect(url_for('adminPanel.users'))
     return render_template("admin/users.html", form=ret_user, is_edit=True)
 
 
 @manage.route('/users', methods=["GET", "POST"])
-@login_required
+@admin_required
 def delete_user():
     """
     Route for deleting a user in the admin control panel.
@@ -91,11 +106,11 @@ def delete_user():
             print("delete complete!")
         except Exception:
             print("unexpected error")
-    return redirect(url_for('controlPanel.users'))
+    return redirect(url_for('adminPanel.users'))
 
 
 @manage.route('/posts', methods=["GET", "POST"])
-@login_required
+@admin_required
 def posts():
     """
     Route for displaying posts in the admin control panel.
@@ -105,15 +120,14 @@ def posts():
             posts: pagination object containing posts
             pagination: pagination object
     """
-    if current_user.is_Author:
-        if request.method == "GET":
-            page = request.args.get('page', 1, type=int)
-            pagination = Post.query.filter_by(author=current_user.username).paginate(page=page, per_page=2)
-            return render_template("admin/posts.html", posts=pagination, pagination=pagination)
+    if request.method == "GET":
+        page = request.args.get('page', 1, type=int)
+        pagination = Post.query.paginate(page=page, per_page=5)
+        return render_template("admin/posts.html", posts=pagination, pagination=pagination)
 
 
 @manage.route('/delete-post', methods=["GET", "POST"])
-@login_required
+@admin_required
 def delete_post():
     """
     Route for deleting a post in the admin control panel.
@@ -131,14 +145,14 @@ def delete_post():
         else:
             flash("You are not allowed to edit this post!", category="danger")
 
-        return redirect(url_for("controlPanel.posts"))
+        return redirect(url_for("adminPanel.posts"))
     except Exception:
         return render_template("handler/404.html")
 
 
 # edit selected post
 @manage.route('/edits-post/<int:post_id>', methods=["GET", "POST"])
-@login_required
+@admin_required
 def edit_post(post_id):
     """
        Route for editing a post in the admin control panel.
@@ -174,4 +188,44 @@ def edit_post(post_id):
             return redirect(url_for("views.post", post_id=post.id))
         # return redirect(url_for('controlPanel.posts'))
         return render_template("handler/createpost.html", form=edit_form, is_edit=True, name=current_user.username)
-    return redirect(url_for("views.get_all_posts"))
+    return redirect(url_for("views.getHomePage"))
+
+
+@manage.route('/login', methods=['GET', 'POST'])
+def login():
+    """
+    Login route for admin login.
+
+    GET: Renders the 'auth/admin_login.html' template with the 'AdminLoginForm'.
+    POST: Handles the form submission for admin login. Validates the form data,
+    checks the credentials, and logs the admin in if the credentials are valid.
+    """
+    login_form = LoginForm()
+    if login_form.validate_on_submit():
+        admin = User.query.filter_by(email=login_form.email.data).first()
+        if admin and admin.email == 'admin@gmail.com':
+            if check_password_hash(admin.password, login_form.password.data):
+                flash("ADMIN LOG IN SUCCESS!", category="success")
+                session['ADMIN_SESSION_KEY'] = True  # Set admin session key
+                return redirect(url_for('adminPanel.dashboard'))
+            else:
+                print("INvalid permission")
+                flash("Invalid credentials!", category="error")
+        else:
+            flash("Invalid credentials!", category="error")
+    return render_template('auth/login.html', adminform=login_form, name="ADMIN LOGIN")
+
+
+@manage.route('/logout')
+@admin_required
+def logout():
+    """
+    Logout route for admin logout.
+
+    Clears the admin session key, logs out the admin user, and redirects to the login page.
+    """
+    print("Before logout - ADMIN_SESSION_KEY:", session.get('ADMIN_SESSION_KEY'))
+    session.pop('ADMIN_SESSION_KEY', None)  # Remove admin session key
+    print("After logout - ADMIN_SESSION_KEY:", session.get('ADMIN_SESSION_KEY'))
+    flash("You have been logged out.", category="success")
+    return redirect(url_for('adminPanel.login'))

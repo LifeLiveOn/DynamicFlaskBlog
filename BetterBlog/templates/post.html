@@ -25,9 +25,9 @@
 <article>
     <div>
         <div class="row">
-            {% if post.author == name.username %}
+            {% if post.author == name %}
             <div class="clearfix">
-                <a class="btn btn-primary float-right" href="{{url_for('controlPanel.edit_post',post_id=post.id)}}">Edit
+                <a class="btn btn-primary float-right" href="{{url_for('adminPanel.edit_post',post_id=post.id)}}">Edit
                     Post</a>
                 {% endif %}
             </div>
@@ -84,7 +84,7 @@
                             <a class="comment-author" href="/posts/{{ comment.user.username }}">
                                 {{ comment.user.username }}
                             </a>
-                            {% if comment.user.username == name.username %}
+                            {% if comment.user.username == name %}
                             <a class="comment-delete"
                                onclick="deleteComment('{{ comment.id }}', '{{ post.id }}'); return false;">
                                 Delete
@@ -105,13 +105,15 @@
             <h3 class="no-comments">No comments yet</h3>
             {% endif %}
         </div>
-
+        {% if name == "GUEST" %}
         <div class="addCommentContainer">
-            <button class="btn btn-primary" id="addComment" type="button">Add
-                comment here
-            </button>
+            <h1>Log in to comment</h1>
+        </div>
+        {% else %}
+        <div class="addCommentContainer">
+            <button class="btn btn-primary" id="addComment" type="button">Add comment here</button>
             <div class="comment-form-container" id="commentDiv" style="display:none;">
-                <form id="commentForm" onsubmit=" addComment('{{post.id}}'); return false;">
+                <form id="commentForm" onsubmit="addComment('{{post.id}}'); return false;">
                     {{ commentForm.csrf_token }}
                     <div class="form-group">
                         <textarea class="form-control" cols="50" name="body" placeholder="Enter your comment" required
@@ -121,6 +123,8 @@
                 </form>
             </div>
         </div>
+        {% endif %}
+
 
     </div>
 </article>

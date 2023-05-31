@@ -37,7 +37,7 @@ def registerUser():
             flash("User create!")
             login_user(new_user, remember=True)
 
-        return redirect(url_for('views.get_all_posts'))
+        return redirect(url_for('views.getHomePage'))
     return render_template('auth/register.html', form=form)
 
 
@@ -57,7 +57,7 @@ def loginUser():
             if check_password_hash(user.password, login_form.password.data):
                 flash("LOG IN SUCCESS !", category="success")
                 login_user(user, remember=True)
-                return redirect(url_for('views.get_all_posts'))
+                return redirect(url_for('views.getHomePage'))
             else:
                 flash("Invalid credential!", category="error")
         else:
@@ -71,7 +71,7 @@ def logoutUser():
     """
     Logout route for user logout.
 
-    Logs out the currently logged-in user and redirects to 'views.get_all_posts' route.
+    Logs out the currently logged-in user and redirects to 'views.getHomePage' route.
     """
     logout_user()
-    return redirect(url_for("views.get_all_posts"))
+    return redirect(url_for("views.getHomePage"))

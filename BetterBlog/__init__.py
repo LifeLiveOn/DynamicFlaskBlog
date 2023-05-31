@@ -17,7 +17,6 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config['UPLOADED_PATH'] = os.path.join(basedir, 'uploads')
     migrate = Migrate(app, db)  # run flask db init
@@ -26,7 +25,8 @@ def create_app():
 
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'  # use sqlite with flask alchemy
     app.config['CKEDITOR_FILE_UPLOADER'] = 'upload'  # calling upload route
-
+    app.config['ADMIN_SESSION_KEY'] = False
+    app.config['USER_SESSION_KEY'] = False
     db.init_app(app)
 
     CKEditor(app)
@@ -36,7 +36,7 @@ def create_app():
 
     from .auth import auth
 
-    from .controlPanel import manage
+    from .adminPanel import manage
 
     app.register_blueprint(view, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")

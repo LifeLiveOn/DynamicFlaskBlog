@@ -6,9 +6,51 @@ Login
 {% endblock %}
 
 {% block content %}
+{% if form %}
 <div class="container">
     <h1>Login</h1>
     {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
     <p>Don't have an account? <a href="{{ url_for('auth.registerUser') }}">Sign Up</a></p>
 </div>
+{% endif %}
+
+{% if adminform %}
+<!-- auth/login.html -->
+<!-- auth/login.html -->
+<div class="container">
+    <div class="row justify-content-center align-items-top">
+        <div class="col-md-3">
+            <button class="btn btn-primary btn-block" id="admin-login-btn">Admin Login</button>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Login Form (Pop-up) -->
+<div class="admin-login-popup" id="admin-login-popup">
+    <div class="admin-login-content">
+        <span class="admin-login-close">&times;</span>
+        <h2>Login</h2>
+        {{ wtf.quick_form(adminform, novalidate=True, button_map={"submit": "primary"}) }}
+        <p>Don't have an account? <a>contact admin</a></p>
+    </div>
+</div>
+
+
+<script>
+    // JavaScript code for the admin login popup
+    const adminLoginBtn = document.getElementById('admin-login-btn');
+    const adminLoginPopup = document.getElementById('admin-login-popup');
+    const adminLoginClose = document.querySelector('.admin-login-close');
+
+    adminLoginBtn.addEventListener('click', () => {
+        adminLoginPopup.style.display = 'block';
+    });
+
+    adminLoginClose.addEventListener('click', () => {
+        adminLoginPopup.style.display = 'none';
+    });
+
+</script>
+
+{% endif %}
 {% endblock %}
