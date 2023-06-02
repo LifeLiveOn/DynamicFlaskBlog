@@ -8,10 +8,10 @@ from flask_login import login_required, current_user
 from sqlalchemy import desc, func
 from sqlalchemy import or_
 
+from BetterBlog import db
+from BetterBlog.modal.forms import CreatePostForm, CommentForm
+from BetterBlog.modal.models import Post, Comment, Like, About
 from BetterBlog.scripts import send_email, strip_invalid_html
-from . import db
-from .forms import CreatePostForm, CommentForm
-from .models import Post, Comment, Like
 
 view = Blueprint("views", "__name__")  # blueprint
 lazy = LazyViews(view)
@@ -38,8 +38,14 @@ def get_about():
     Returns:
         rendered HTML template
     """
-    name = get_user_name()
-    return render_template("about.html", name=name)
+    about = About.query.first()
+    if about:
+        post_id = about.selected_postId
+        post = Post.query.filter_by(id=post_id).first()
+        if post:
+            name = get_user_name()
+            return render_template("about.html", name=name, content=post)
+    return redirect(url_for("views.show_first_post"))
 
 
 @view.route('/contact', methods=["GET", "POST"])
@@ -106,7 +112,7 @@ def create_post():
     """
     Creates a new post. If the current user is an author, it validates the form and creates a new post in the database.
     The post's body is cleaned using the strip_invalid_html function before saving. After creating the post, it redirects
-    to the page with all posts.
+    to the page with all from dotenv import load_dotenv.
 
     Returns:
         rendered HTML template or redirection
@@ -207,7 +213,7 @@ def add_comment(post_id):
         try:
             db.session.add(new_comment)
             db.session.commit()
-            print(new_comment)
+            # print(new_comment)
             return jsonify({
                 'message': 'Comment added successfully',
                 "comment": {

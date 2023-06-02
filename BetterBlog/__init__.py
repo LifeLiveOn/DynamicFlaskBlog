@@ -32,17 +32,17 @@ def create_app():
     CKEditor(app)
     Bootstrap(app)
 
-    from .views import view
+    from BetterBlog.control.views import view
 
-    from .auth import auth
+    from BetterBlog.control.auth import auth
 
-    from .adminPanel import manage
+    from BetterBlog.control.adminPanel import manage
 
     app.register_blueprint(view, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
     app.register_blueprint(manage, url_prefix="/dashboard")
 
-    from .models import User, Post, Comment, Like
+    from BetterBlog.modal.models import User, Post, Comment, Like
     with app.app_context():
         db.create_all()
 

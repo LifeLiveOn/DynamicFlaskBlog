@@ -78,7 +78,7 @@ function appendComment(author, content, date) {
                 <a class="comment-author" href="#">${author}</a>
             </div>
             <a class="comment-delete">
-                 Refresh page to use Delete
+                 Refresh page to see delete option for this comment
             </a>
             <div class="comment-content">
                 ${content}

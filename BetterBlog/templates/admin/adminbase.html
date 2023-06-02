@@ -2,82 +2,233 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
-
-    <link href="{{url_for('static', filename='css/styles.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" type="text/css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css" rel="stylesheet">
     <style>
         .sidebar-container {
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: flex-start;
+            position: sticky;
+            top: 0;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
     </style>
 </head>
 <body>
 {% block sidebar %}
-<div class="sidebar-container d-flex flex-column p-3 text-white bg-dark" style="width: 280px;">
-    <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none" href="/">
-        <svg class="bi me-2" height="32" width="40">
-            <use xlink:href="#bootstrap"></use>
-        </svg>
-        <span class="fs-4">Welcome</span>
-    </a>
-    <hr>
-    <ul class="nav nav-pills flex-column mb-auto">
-        <li class="nav-item">
-            <a aria-current="page" class="nav-link active" href="#">
-                <i class="fa-duotone fa-house-user"></i>
-                Home
-            </a>
-        </li>
-        <li>
-            <a class="nav-link text-white" href="{{url_for('adminPanel.posts')}}">
-                <i class="fas fa-file-alt"></i>
-                Posts
-            </a>
-        </li>
-        <li>
-            <a class="nav-link text-white" href="{{url_for('adminPanel.users')}}">
-                <i class="fas fa-users"></i>
-                Users
-            </a>
-        </li>
-        <li>
-            <a class="nav-link text-white" href="">
-                <i class="fa fa-wrench"></i>
-                Currently update
-            </a>
-        </li>
-    </ul>
-    <hr>
-    <div class="dropdown">
-        <a aria-expanded="false" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
-           href="#" id="dropdownUser1">
-            <img alt="" class="rounded-circle me-2"
-                 height="32" src="https://cdn.discordapp.com/emojis/956239879593918494.webp?size=96&quality=lossless" width="32">
-            <strong>Admin</strong>
-        </a>
-        <ul aria-labelledby="dropdownUser1" class="dropdown-menu dropdown-menu-dark text-small shadow">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-2 col-md-4 col-sm-6" style="padding-left: 0%;">
+            <div class="sidebar-container d-flex flex-column p-3 text-white bg-dark">
+                <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none" href="/">
+                    <svg class="bi me-2" height="32" width="40">
+                    </svg>
+                    <span class="fs-4">Welcome</span>
+                </a>
+                <hr>
+                <a class="nav-link active" href="#">
+                    <i class="fa-duotone fa-house-user"></i>
+                    Home
+                </a>
+                <a class="nav-link text-white" href="/dashboard/posts">
+                    <i class="fas fa-file-alt"></i>
+                    Posts
+                </a>
+                <a class="nav-link text-white" href="/dashboard/users">
+                    <i class="fas fa-users"></i>
+                    Users
+                </a>
+                <a class="nav-link text-white" data-bs-target="#editAboutModal" data-bs-toggle="modal" href="#">
+                    <i class="fa fa-wrench"></i>
+                    Edit About
+                </a>
 
+                <div class="d-sm-none">
+                    <!-- Show this on screens smaller than sm breakpoint -->
+                    {% include 'admin/searchForm.html' %}
+                </div>
+                <hr>
+                <div class="dropdown">
+                    <a aria-expanded="false"
+                       class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                       data-bs-toggle="dropdown" href="#" id="dropdownUser1">
+                        <img alt="" class="rounded-circle me-2" height="32"
+                             src="https://cdn.discordapp.com/emojis/956239879593918494.webp?size=96&amp;quality=lossless"
+                             width="32">
+                        <strong>Admin</strong>
+                    </a>
+                    <ul aria-labelledby="dropdownUser1" class="dropdown-menu dropdown-menu-dark text-small shadow">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="/dashboard/logout">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-            <li><a class="dropdown-item" href="#">Profile</a></li>
-            <li>
-                <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" href="{{url_for('adminPanel.logout')}}">Sign out</a></li>
-        </ul>
+        <div class="col-lg col-md-5 col-sm-6 d-none d-sm-block">
+            <!-- Input code -->
+            {% block main %}
+            <div class="container quicksearch">
+                <h1 style="margin-top:1em;">Quick search</h1>
+                {% include 'admin/searchForm.html' %}
+
+                <h1 style="margin-top:2em;">Latest comments</h1>
+                <div class="col-lg">
+                    <button class="btn btn-primary" id="toggle-comments-btn">Toggle Comments</button>
+                    <div class="table-responsive" id="comment-table" style="display: block;">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                            <tr>
+                                <th scope="col">Comment ID</th>
+                                <th scope="col">Author</th>
+                                <th scope="col">Content</th>
+                                <th scope="col">Date Created</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for comment in pagination.items %}
+                            <tr>
+                                <td>{{ comment.id }}</td>
+                                <td>{{ comment.author }}</td>
+                                <td>{% if comment.content|length > 50 %}
+                                    <textarea class="form-control"
+                                              onclick="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'"
+                                              readonly rows="3">{{ comment.content }}</textarea>
+                                    {% else %}
+                                    {{ comment.content }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ comment.date_created }}</td>
+                                <td>
+                                    <form action="{{ url_for('adminPanel.delete_comment', comment_id=comment.id) }}"
+                                          id="delete-form-{{ comment.id }}" method="POST">
+                                        <button class="btn btn-danger" onclick="confirmDelete({{ comment.id }})"
+                                                type="button">Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            {% if pagination.pages > 1 %}
+            <nav aria-label="Pagination">
+                <ul class="pagination">
+                    {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a aria-label="Previous" class="page-link"
+                           href="{{ url_for('adminPanel.dashboard', page=pagination.prev_num) }}">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for page_num in pagination.iter_pages() %}
+                    {% if page_num %}
+                    {% if page_num == pagination.page %}
+                    <li aria-current="page" class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('adminPanel.dashboard', page=page_num) }}">{{ page_num
+                            }}</a>
+                    </li>
+                    {% endif %}
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a aria-label="Next" class="page-link"
+                           href="{{ url_for('adminPanel.dashboard', page=pagination.next_num) }}">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
     </div>
+    {% endblock %}
+
+
+</div>
+<!-- Force next columns to break to new line -->
+
+</div>
 </div>
 {% endblock %}
-
 {% block content %}
 {% endblock %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    function confirmDelete(commentId) {
+        if (confirm("Are you sure you want to delete this comment?")) {
+            document.getElementById("delete-form-" + commentId).submit();
+        }
+    }
+
+    var toggleBtn = document.getElementById("toggle-comments-btn");
+    var commentTable = document.getElementById("comment-table");
+
+    toggleBtn.addEventListener("click", function () {
+        if (commentTable.style.display === "none") {
+            commentTable.style.display = "block";
+        } else {
+            commentTable.style.display = "none";
+        }
+    });
+</script>
+<!-- Edit About Modal -->
+<div aria-hidden="true" aria-labelledby="editAboutModalLabel" class="modal fade" id="editAboutModal"
+     tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAboutModalLabel">Edit About</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                        type="button"></button>
+            </div>
+            <form action="{{ url_for('adminPanel.edit_about') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="aboutId">Enter About ID:</label>
+                        <input class="form-control" id="aboutId" name="id" required type="number">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close
+                    </button>
+                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

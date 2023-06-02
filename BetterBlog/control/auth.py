@@ -4,9 +4,9 @@ from flask import Blueprint, redirect, render_template, flash, url_for
 from flask_login import login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from BetterBlog.forms import Account, LoginForm
-from . import db
-from .models import User
+from BetterBlog import db
+from BetterBlog.modal.forms import Account, LoginForm
+from BetterBlog.modal.models import User
 
 auth = Blueprint("auth", "__name__")
 

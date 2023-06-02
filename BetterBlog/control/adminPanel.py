@@ -6,10 +6,10 @@ from flask_login import current_user
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import check_password_hash
 
-from .forms import User as UserForm, CreatePostForm, LoginForm
-from .models import User, Post
-from .models import db
-from .scripts import strip_invalid_html
+from BetterBlog.modal.forms import User as UserForm, CreatePostForm, LoginForm
+from BetterBlog.modal.models import User, Post, Comment, About
+from BetterBlog.modal.models import db
+from BetterBlog.scripts import strip_invalid_html
 
 manage = Blueprint("adminPanel", "__name__")
 # mean that showing how many user on the table range per page
@@ -39,7 +39,10 @@ def dashboard():
     Returns:
         rendered template: admin/adminbase.html
     """
-    return render_template("admin/adminbase.html")
+    page = request.args.get('page', 1, type=int)
+    pagination = Comment.query.order_by(Comment.date_created).paginate(page=page, per_page=10)
+    print(pagination.items)
+    return render_template("admin/adminbase.html", comments=pagination, pagination=pagination)
 
 
 @manage.route('/users')
@@ -152,7 +155,6 @@ def delete_post():
 
 # edit selected post
 @manage.route('/edits-post/<int:post_id>', methods=["GET", "POST"])
-@admin_required
 def edit_post(post_id):
     """
        Route for editing a post in the admin control panel.
@@ -166,12 +168,7 @@ def edit_post(post_id):
         id=post_id).first()  # use the object itself instead of the copy version of it
     if post.author == current_user.username:
         edit_form = CreatePostForm(  # create as a form to able to get the old data to the wtflask form (faster way)
-            title=post.title,
-            subtitle=post.subtitle,
-            img_url=post.img_url,
-            author=post.author,
-            body=post.body
-        )
+            title=post.title, subtitle=post.subtitle, img_url=post.img_url, author=post.author, body=post.body)
         if edit_form.validate_on_submit():
             post.title = edit_form.title.data
             post.subtitle = edit_form.subtitle.data
@@ -229,3 +226,36 @@ def logout():
     print("After logout - ADMIN_SESSION_KEY:", session.get('ADMIN_SESSION_KEY'))
     flash("You have been logged out.", category="success")
     return redirect(url_for('adminPanel.login'))
+
+
+# Route to handle comment deletion
+@manage.route('/delete_comment/<int:comment_id>', methods=['POST'])
+@admin_required
+def delete_comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+
+    # Perform the deletion
+    db.session.delete(comment)
+    db.session.commit()
+
+    # Redirect to the dashboard or any other desired page
+    return redirect(url_for('adminPanel.dashboard'))
+
+
+@manage.route('/edit_about', methods=["GET", "POST"])
+@admin_required
+def edit_about():
+    about_content = About.query.first()  # Get the first About record
+
+    if not about_content:  # If there are no About records, create a new one with default post ID
+        about_content = About(selected_postId=1)
+        db.session.add(about_content)
+        db.session.commit()
+
+    if request.method == "POST":
+        selectedPosID = request.form.get("id")
+        about_content.selected_postId = selectedPosID
+        db.session.commit()
+        return redirect(url_for('views.get_about'))
+
+    return redirect(url_for('views.get_about'))

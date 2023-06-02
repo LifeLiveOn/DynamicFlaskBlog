@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask_login import UserMixin
 
-from . import db
+from BetterBlog import db
 
 
 class User(db.Model, UserMixin):
@@ -35,6 +35,11 @@ class Post(db.Model):
 
     def __repr__(self):
         return f'<Post "{self.title}">'
+
+
+class About(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    selected_postId = db.Column(db.Integer, nullable=False)
 
 
 class Comment(db.Model):

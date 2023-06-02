@@ -26,6 +26,11 @@ class User(FlaskForm):
     submit = SubmitField(label="Confirm")
 
 
+class GetAboutForm(FlaskForm):
+    id = StringField("About me using post id", validators=[DataRequired()])
+    submit = SubmitField(label="submit")
+
+
 class CreatePostForm(FlaskForm):
     """Form for creating a blog post."""
     title = StringField("Blog Post Title", validators=[DataRequired()])

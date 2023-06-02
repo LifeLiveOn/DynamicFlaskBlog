@@ -57,12 +57,10 @@
         {% endif %}
 
     </div>
-
     <div class="show_comment container">
-
         <div class="row">
             {%+ if post.comments | length >0 %}
-            <a data-bs-toggle="collapse" href="#comments-{{post.id}}" role="button">
+            <a href="#comments-{{post.id}}" onclick="toogleComments()" role="button">
                 <small class="text-primary">View {{post.comments|length}} Comments</small>
             </a>
             {% else %}
@@ -71,46 +69,43 @@
         </div>
     </div>
 
-
     <div id="commentsContainer">
-        <div class="collapse" id="comments-{{ post.id }}">
-            {% if post.comments %}
-            <h3 class="comments-header">Comments</h3>
-            <div class="comments-list">
-                {% for comment in post.comments %}
-                <div class="comment-box" id="commentID-{{comment.id}}">
-                    <div class="comment">
-                        <div class="comment-header">
-                            <a class="comment-author" href="/posts/{{ comment.user.username }}">
-                                {{ comment.user.username }}
-                            </a>
-                            {% if comment.user.username == name %}
-                            <a class="comment-delete"
-                               onclick="deleteComment('{{ comment.id }}', '{{ post.id }}'); return false;">
-                                Delete
-                            </a>
-                            {% endif %}
-                        </div>
-                        <div class="comment-content">
-                            {{ comment.content | safe }}
-                        </div>
-                        <div class="comment-date">
-                            <small class="text-muted">{{ comment.date_created | filterDate }}</small>
+        <div class="center-div" id="comments">
+            <div id="comments-{{ post.id }}">
+                <h3 class="comments-header">Comments</h3>
+                <div class="comments-list">
+                    {% for comment in post.comments %}
+                    <div class="comment-box" id="commentID-{{comment.id}}">
+                        <div class="comment">
+                            <div class="comment-header">
+                                <a class="comment-author" href="/posts/{{ comment.user.username }}">
+                                    {{ comment.user.username }}
+                                </a>
+                                {% if comment.user.username == name %}
+                                <a class="comment-delete"
+                                   onclick="deleteComment('{{ comment.id }}', '{{ post.id }}'); return false;">
+                                    Delete
+                                </a>
+                                {% endif %}
+                            </div>
+                            <div class="comment-content">
+                                {{ comment.content | safe }}
+                            </div>
+                            <div class="comment-date">
+                                <small class="text-muted">{{ comment.date_created | filterDate }}</small>
+                            </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
-            {% else %}
-            <h3 class="no-comments">No comments yet</h3>
-            {% endif %}
         </div>
         {% if name == "GUEST" %}
         <div class="addCommentContainer">
             <h1>Log in to comment</h1>
         </div>
         {% else %}
-        <div class="addCommentContainer">
+        <div class="addCommentContainer center-div">
             <button class="btn btn-primary" id="addComment" type="button">Add comment here</button>
             <div class="comment-form-container" id="commentDiv" style="display:none;">
                 <form id="commentForm" onsubmit="addComment('{{post.id}}'); return false;">
@@ -124,10 +119,18 @@
             </div>
         </div>
         {% endif %}
-
-
     </div>
 </article>
+<script>
+    function toogleComments() {
+        const contents = document.getElementById("comments");
+        if (contents.style.display === "none") {
+            contents.style.display = "block";
+        } else {
+            contents.style.display = "none";
+        }
+    }
+</script>
 
 <!-- Footer-->
 {% include 'footer.html' %}
