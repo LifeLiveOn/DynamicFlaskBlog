@@ -30,7 +30,6 @@ def getHomePage():
     name = get_user_name()
     # render the admin post for special event
     evenPosts = Post.query.filter_by(author="admin123").all()
-    print(evenPosts)
     return render_template("index.html", all_posts=posts, name=name, eventPosts=evenPosts)
 
 
