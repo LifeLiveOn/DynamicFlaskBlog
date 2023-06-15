@@ -107,8 +107,8 @@ def delete_user():
             user = User.query.filter_by(id=user_id).delete()
             db.session.commit()
             print("delete complete!")
-        except Exception:
-            print("unexpected error")
+        except Exception as e:
+            print(e)
     return redirect(url_for('adminPanel.users'))
 
 
@@ -123,6 +123,7 @@ def posts():
             posts: pagination object containing posts
             pagination: pagination object
     """
+
     if request.method == "GET":
         page = request.args.get('page', 1, type=int)
         pagination = Post.query.paginate(page=page, per_page=5)
@@ -166,7 +167,7 @@ def edit_post(post_id):
     """
     post = db.session.query(Post).filter_by(
         id=post_id).first()  # use the object itself instead of the copy version of it
-    if post.author == current_user.username:
+    if post.author == current_user.username or current_user.email == "admin@gmail.com":
         edit_form = CreatePostForm(  # create as a form to able to get the old data to the wtflask form (faster way)
             title=post.title, subtitle=post.subtitle, img_url=post.img_url, author=post.author, body=post.body)
         if edit_form.validate_on_submit():

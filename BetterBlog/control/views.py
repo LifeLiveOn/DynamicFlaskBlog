@@ -25,9 +25,13 @@ def getHomePage():
     Returns:
         rendered HTML template
     """
+    # render post from the most like to bottom
     posts = Post.query.outerjoin(Post.likes).group_by(Post.id).order_by(desc(func.count(Like.id))).limit(5).all()
     name = get_user_name()
-    return render_template("index.html", all_posts=posts, name=name)
+    # render the admin post for special event
+    evenPosts = Post.query.filter_by(author="admin123").all()
+    print(evenPosts)
+    return render_template("index.html", all_posts=posts, name=name, eventPosts=evenPosts)
 
 
 @view.route('/about')
@@ -165,7 +169,7 @@ def getAllPost():
     name = get_user_name()
     try:
         page = request.args.get('page', 1, type=int)
-        per_page = 5  # Number of posts per page
+        per_page = 6  # Number of posts per page
 
         # Get the search query parameter
         search_query = request.args.get('q', '')

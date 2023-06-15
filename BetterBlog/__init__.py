@@ -78,6 +78,13 @@ def create_app():
 
     @app.template_filter('filterDate')
     def filter_date(date_string):
-        return datetime.strptime(date_string[0:19], "%Y-%m-%d %H:%M:%S")
+        try:
+            datetime_obj = datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S.%f")
+            readable_date = datetime_obj.strftime("%B %d, %Y")
+        except ValueError:
+            datetime_obj = datetime.strptime(date_string, "%Y-%m-%d")
+            readable_date = datetime_obj.strftime("%B %d, %Y")
+
+        return readable_date
 
     return app
