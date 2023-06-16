@@ -15,7 +15,7 @@ load_dotenv()
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/static')
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config['UPLOADED_PATH'] = os.path.join(basedir, 'uploads')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
