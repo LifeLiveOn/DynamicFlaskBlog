@@ -3,7 +3,6 @@ from datetime import date
 
 import sqlalchemy.exc as db_exceptions
 from flask import Blueprint, render_template, redirect, url_for, request, jsonify
-from flask_lazyviews import LazyViews
 from flask_login import login_required, current_user
 from sqlalchemy import desc, func
 from sqlalchemy import or_
@@ -14,7 +13,6 @@ from BetterBlog.modal.models import Post, Comment, Like, About
 from BetterBlog.scripts import send_email, strip_invalid_html
 
 view = Blueprint("views", "__name__")  # blueprint
-lazy = LazyViews(view)
 
 
 @view.route('/')
