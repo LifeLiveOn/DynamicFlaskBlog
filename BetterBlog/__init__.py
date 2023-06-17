@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 
-import pymysql
 from dotenv import load_dotenv
 from flask import Flask, request, url_for, send_from_directory
 from flask_bootstrap import Bootstrap
@@ -28,14 +27,6 @@ def create_app():
         app.config['DB_USER'] = os.getenv('MYSQLUSER')
         app.config['DB_PASSWORD'] = os.getenv('MYSQLPASSWORD')
         app.config['DB_NAME'] = os.getenv('MYSQLDATABASE')
-
-        # Create a PyMySQL connection
-        connection = pymysql.connect(
-            host=app.config['DB_HOST'],
-            user=app.config['DB_USER'],
-            password=app.config['DB_PASSWORD'],
-            database=app.config['DB_NAME']
-        )
 
         app.config[
             'SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{app.config['DB_USER']}:{app.config['DB_PASSWORD']}@{app.config['DB_HOST']}/{app.config['DB_NAME']}"
