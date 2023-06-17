@@ -183,7 +183,7 @@ def edit_post(post_id):
                 print("can't update, something is wrong while editing!")
                 db.session.rollback()
                 raise
-            return redirect(url_for("views.post", post_id=post.id))
+            return redirect(url_for("views.get_post", post_id=post.id))
         # return redirect(url_for('controlPanel.posts'))
         return render_template("handler/createpost.html", form=edit_form, is_edit=True, name=current_user.username)
     return redirect(url_for("views.getHomePage"))
