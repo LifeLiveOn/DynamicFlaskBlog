@@ -29,9 +29,10 @@ def create_app():
         app.config['DB_USER'] = os.getenv('MYSQLUSER')
         app.config['DB_PASSWORD'] = os.getenv('MYSQLPASSWORD')
         app.config['DB_NAME'] = os.getenv('MYSQLDATABASE')
+        app.config['DB_PORT'] = os.getenv('MYSQLPORT')
 
         app.config[
-            'SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{app.config['DB_USER']}:{app.config['DB_PASSWORD']}@{app.config['DB_HOST']}/{app.config['DB_NAME']}"
+            'SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{app.config['DB_USER']}:{app.config['DB_PASSWORD']}@{app.config['DB_HOST']}:{app.config['DB_PORT']}/{app.config['DB_NAME']}"
 
         # Test database connection
         engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
