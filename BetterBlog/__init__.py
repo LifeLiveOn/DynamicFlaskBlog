@@ -8,6 +8,8 @@ from flask_ckeditor import CKEditor
 from flask_ckeditor import upload_success, upload_fail
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from sqlalchemy.exc import OperationalError
 
 DB_NAME = "posts.db"
 db = SQLAlchemy()
@@ -30,6 +32,17 @@ def create_app():
 
         app.config[
             'SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{app.config['DB_USER']}:{app.config['DB_PASSWORD']}@{app.config['DB_HOST']}/{app.config['DB_NAME']}"
+
+        # Test database connection
+        engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+        try:
+            connection = engine.connect()
+        except OperationalError as e:
+            print("Failed to connect to database.")
+            print(e)
+            # Handle error as needed
+        else:
+            connection.close()
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_NAME}"
 
