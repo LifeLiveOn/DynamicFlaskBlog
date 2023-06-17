@@ -127,7 +127,7 @@ def create_post():
                 title=form.title.data,
                 subtitle=form.subtitle.data,
                 body=strip_invalid_html(body),
-                author=form.author.data,
+                author=current_user.id,
                 img_url=form.img_url.data if form.img_url.data else "",
                 date_created=date.today()
             )
