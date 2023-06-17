@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+import pymysql
 from dotenv import load_dotenv
 from flask import Flask, request, url_for, send_from_directory
 from flask_bootstrap import Bootstrap
@@ -21,12 +22,31 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL') or f'sqlite:///{DB_NAME}'
+    if os.getenv('MYSQLHOST'):
+        # Railway MySQL connection settings
+        app.config['DB_HOST'] = os.getenv('MYSQLHOST')
+        app.config['DB_USER'] = os.getenv('MYSQLUSER')
+        app.config['DB_PASSWORD'] = os.getenv('MYSQLPASSWORD')
+        app.config['DB_NAME'] = os.getenv('MYSQLDATABASE')
+
+        # Create a PyMySQL connection
+        connection = pymysql.connect(
+            host=app.config['DB_HOST'],
+            user=app.config['DB_USER'],
+            password=app.config['DB_PASSWORD'],
+            database=app.config['DB_NAME']
+        )
+
+        app.config[
+            'SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{app.config['DB_USER']}:{app.config['DB_PASSWORD']}@{app.config['DB_HOST']}/{app.config['DB_NAME']}"
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_NAME}"
+
     app.config['CKEDITOR_FILE_UPLOADER'] = 'upload'
     app.config['ADMIN_SESSION_KEY'] = False
     app.config['USER_SESSION_KEY'] = False
-    db.init_app(app)
 
+    db.init_app(app)
     CKEditor(app)
     Bootstrap(app)
 
