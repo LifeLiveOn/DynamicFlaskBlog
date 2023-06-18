@@ -1,6 +1,5 @@
 {% include "header.html" %}
 
-<!--Get flash message here and send to client-->
 <div class="fixed-top">
     {% with messages = get_flashed_messages(category_filter=["success"]) %}
     {% if messages %}
@@ -18,31 +17,24 @@
     <div class="carousel slide" data-bs-ride="carousel" id="carouselExampleControls">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <a>
-                    <img alt="..."
-                         class="d-block w-100" id="carouselContents"
-                         src="https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-674010.jpg&fm=jpg">
-                </a>
+                <img alt="Illustration related to logistics management"
+                     class="d-block w-100"
+                     id="carouselContents"
+                     src="https://www.cdlogistics.ca/freight-news/wp-content/uploads/2021/08/New-Project-81.jpg"
+                >
             </div>
             {% for post in all_posts %}
             <div class="carousel-item">
-
-                <a href="{{ url_for('views.get_post', post_id=post.id) }}">
-                    {% if post.img_url == null %}
-                    <img alt="..."
-                         class="d-block w-100" id="carouselContents"
-                         src="https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-674010.jpg&fm=jpg">
-                    {% else %}
-                    <img alt="..." class="d-block w-100" id="carouselContents" src="{{ post.img_url }}">
-                    {% endif %}
-                </a>
-
+                <img
+                        alt="{{post.title}}"
+                        class="d-block w-100"
+                        id="carouselContents"
+                        src="{% if post.img_url == null %}https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-674010.jpg&fm=jpg{% else %}{{ post.img_url }}{% endif %}"
+                >
                 <div class="carousel-caption d-none d-md-block">
-                    <h1> {{post.title}} </h1>
-                    <h2> {{post.subtitle}} </h2>
-
+                    <h1>{{post.title}}</h1>
+                    <h2>{{post.subtitle}}</h2>
                 </div>
-
             </div>
             {% endfor %}
         </div>
@@ -57,27 +49,21 @@
             <span class="visually-hidden">Next</span>
         </button>
     </div>
-
 </header>
 
-
-<!-- Main Content-->
-
-<div class="container px-4 px-lg-5">
+<main class="container px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5">
         <div class="col-md-5 col-lg-6 col-xl-8">
-            <div class="d-flex mt-4">
+            <section class="d-flex mt-4">
                 <h1> Cac bai viet noi bai </h1>
                 <a class="btn btn-primary text-uppercase" href="{{url_for('views.getAllPost')}}"
                    style="margin-left:1em;"> Older Posts
                     →</a>
-
-
-            </div>
+            </section>
 
             {% for post in all_posts %}
             <!-- Post preview-->
-            <div class="lazy post-preview">
+            <article class="lazy post-preview">
                 <a href="post/{{post.id}}">
                     <h2 class="post-title">{{post.title}}</h2>
                     <h3 class="post-subtitle">{{post.subtitle}}</h3>
@@ -88,14 +74,13 @@
                     on {{post.date_created}} <span class="h3">{{post.likes|length}}</span>&nbsp<i
                         class="fa-regular fa-thumbs-up fa-2x"></i>
                 </p>
-
-            </div>
+            </article>
             <!-- Divider-->
             <hr class="my-4"/>
             {% endfor %}
             <!-- Pager-->
         </div>
-        <div class="col-md-5 col-lg-4 col-xl-4" style="margin-top:2em;">
+        <aside class="col-md-5 col-lg-4 col-xl-4" style="margin-top:2em;">
             <div class="card-header bg-primary text-white">
                 <h3 class="card-title">Upcoming Events</h3>
             </div>
@@ -110,11 +95,8 @@
                     {% endfor %}
                 </div>
             </div>
-        </div>
-
+        </aside>
     </div>
-</div>
-<!-- Footer-->
-
+</main>
 
 {% include "footer.html" %}
