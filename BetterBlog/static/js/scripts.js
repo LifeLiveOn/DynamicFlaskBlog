@@ -18,7 +18,6 @@ window.addEventListener('DOMContentLoaded', () => {
             if (currentTop > 0 && mainNav.classList.contains('is-fixed')) {
                 mainNav.classList.add('is-visible');
             } else {
-                console.log(123);
                 mainNav.classList.remove('is-visible', 'is-fixed');
             }
         } else {
@@ -108,11 +107,9 @@ function addComment(postId) {
 
     // Send a POST request to the add_comment route with the comment data
     fetch(`/post/${postId}/add_comment`, {
-        method: 'POST',
-        headers: {
+        method: 'POST', headers: {
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+        }, body: JSON.stringify(formData)
     })
         .then(response => response.json())
         .then(data => {
@@ -155,8 +152,18 @@ function deleteComment(commentId, postId) {
         });
 }
 
-
-
+// JavaScript
+document.addEventListener("DOMContentLoaded", function () {
+    const observer = lozad('.lazy', {
+        loaded: function (el) {
+            el.src = el.getAttribute('data-src');
+            el.onload = function () {
+                el.classList.add('fade');
+            }
+        }
+    });
+    observer.observe();
+});
 
 
 

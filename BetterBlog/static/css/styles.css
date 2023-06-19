@@ -11881,7 +11881,7 @@ header.masthead .post-heading .meta a {
     }
 }
 
-#carouselContents {
+.carouselContents {
     width: 100%;
     height: 550px;
     object-fit: cover;

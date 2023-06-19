@@ -1,4 +1,5 @@
 {% include "header.html" %}
+<script src="https://cdn.jsdelivr.net/npm/lozad@1.14.0/dist/lozad.min.js"></script>
 
 <div class="fixed-top">
     {% with messages = get_flashed_messages(category_filter=["success"]) %}
@@ -18,22 +19,22 @@
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <img alt="Illustration related to logistics management"
-                     class="d-block w-100"
-                     id="carouselContents"
+                     class="d-block w-100 carouselContents lazy"
                      src="https://www.cdlogistics.ca/freight-news/wp-content/uploads/2021/08/New-Project-81.jpg"
                 >
             </div>
             {% for post in all_posts %}
             <div class="carousel-item">
-                <img
-                        alt="{{post.title}}"
-                        class="d-block w-100"
-                        id="carouselContents"
-                        src="{% if post.img_url == null %}https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-674010.jpg&fm=jpg{% else %}{{ post.img_url }}{% endif %}"
-                >
-                <div class="carousel-caption d-none d-md-block">
-                    <h1>{{post.title}}</h1>
-                    <h2>{{post.subtitle}}</h2>
+                <div class="carousel-img" style="opacity: .9;">
+                    <img
+                            alt="{{post.title}}"
+                            class="d-block w-100 carouselContents"
+                            src="{% if post.img_url == null %}https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-674010.jpg&fm=jpg{% else %}{{ post.img_url }}{% endif %}"
+                    >
+                </div>
+                <div class="carousel-caption d-none d-md-block" style="text-shadow:1px 1px 2px rgba(0, 0, 0, 0.5);">
+                    <h2>{{post.title}}</h2>
+                    <h3>{{post.subtitle}}</h3>
                 </div>
             </div>
             {% endfor %}
@@ -64,13 +65,13 @@
             {% for post in all_posts %}
             <!-- Post preview-->
             <article class="lazy post-preview">
-                <a href="post/{{post.id}}">
+                <a href="{{url_for('views.get_post',post_id=post.id)}}">
                     <h2 class="post-title">{{post.title}}</h2>
                     <h3 class="post-subtitle">{{post.subtitle}}</h3>
                 </a>
                 <p class="post-meta">
                     Posted by
-                    <a href="#!">{{post.author}}</a>
+                    <a>{{post.author}}</a>
                     on {{post.date_created}} <span class="h3">{{post.likes|length}}</span>&nbsp<i
                         class="fa-regular fa-thumbs-up fa-2x"></i>
                 </p>
@@ -84,8 +85,9 @@
             <div class="card-header bg-primary text-white">
                 <h3 class="card-title">Upcoming Events</h3>
             </div>
-            <div class="card" style="height: 600px; overflow: auto;width:auto;">
+            <div class="card" style="height: auto; overflow: auto;width:auto;max-height:550px;">
                 <div class="card-body">
+                    {% if eventPosts %}
                     {% for event in eventPosts %}
                     <div class="event-card">
                         <h4 class="event-title">{{ event.title }}</h4>
@@ -93,6 +95,12 @@
                         <hr/>
                     </div>
                     {% endfor %}
+
+                    {% else %}
+                    <div class="event-card">
+                        <h4 class="event-title"> There is no new event yet!</h4>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </aside>

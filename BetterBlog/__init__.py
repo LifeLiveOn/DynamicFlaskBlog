@@ -6,6 +6,7 @@ from flask import Flask, request, url_for, send_from_directory
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from flask_ckeditor import upload_success, upload_fail
+from flask_gzip import Gzip
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
@@ -22,7 +23,7 @@ def create_app():
     app.config['UPLOADED_PATH'] = os.path.join(basedir, 'uploads')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-
+    gzip = Gzip(app)
     if os.getenv('MYSQLHOST'):
         # Railway MySQL connection settings
         app.config['DB_HOST'] = os.getenv('MYSQLHOST')

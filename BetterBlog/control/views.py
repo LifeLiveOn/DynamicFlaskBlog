@@ -27,7 +27,7 @@ def getHomePage():
     posts = Post.query.outerjoin(Post.likes).group_by(Post.id).order_by(desc(func.count(Like.id))).limit(5).all()
     name = get_user_name()
     # render the admin post for special event
-    evenPosts = Post.query.filter_by(author="admin123").all()
+    evenPosts = Post.query.filter_by(author="admin123").order_by(desc(Post.date_created)).all()
     return render_template("index.html", all_posts=posts, name=name, eventPosts=evenPosts)
 
 
