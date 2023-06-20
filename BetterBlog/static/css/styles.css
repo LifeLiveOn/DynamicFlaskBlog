@@ -11651,6 +11651,7 @@ blockquote {
 #mainNav .navbar-toggler {
     font-size: 0.75rem;
     font-weight: 800;
+    color: white;
     padding: 0.75rem;
     text-transform: uppercase;
 }
@@ -11704,7 +11705,7 @@ blockquote {
     }
 
     #mainNav.is-fixed .navbar-brand {
-        color: #212529;
+        color: #0081ff;
     }
 
     #mainNav.is-fixed .navbar-brand:focus, #mainNav.is-fixed .navbar-brand:hover {
@@ -11712,7 +11713,7 @@ blockquote {
     }
 
     #mainNav.is-fixed .navbar-nav > li.nav-item > a {
-        color: #212529;
+        color: #ffffff;
     }
 
     #mainNav.is-fixed .navbar-nav > li.nav-item > a:focus, #mainNav.is-fixed .navbar-nav > li.nav-item > a:hover {
