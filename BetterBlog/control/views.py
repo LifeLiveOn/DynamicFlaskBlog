@@ -97,7 +97,6 @@ def get_post(post_id):
     """
     comment = CommentForm()
     name = get_user_name()
-    requested_post = 0
     if request.method == "GET":
         try:
             requested_post = Post.query.get(post_id)

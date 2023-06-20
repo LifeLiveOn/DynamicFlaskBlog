@@ -94,7 +94,11 @@ def create_app():
 
     @app.template_filter('getName')
     def get_author_name(user_id):
-        return User.query.filter_by(id=user_id).first().username
+        author = User.query.filter(User.id == user_id).first()
+        if author:
+            return author.username
+        else:
+            return None
 
     @app.template_filter('filterDate')
     def filter_date(date_string):
