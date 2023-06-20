@@ -25,7 +25,7 @@
 <article>
     <div>
         <div class="row">
-            {% if post.author == name %}
+            {% if post.author | getName == name %}
             <div class="clearfix">
                 <a class="btn btn-primary float-right" href="{{url_for('adminPanel.edit_post',post_id=post.id)}}">Edit
                     Post</a>
