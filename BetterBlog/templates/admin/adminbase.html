@@ -101,7 +101,7 @@
                             {% for comment in pagination.items %}
                             <tr>
                                 <td>{{ comment.id }}</td>
-                                <td>{{ comment.author }}</td>
+                                <td>{{ comment.author|getName }}</td>
                                 <td>{% if comment.content|length > 50 %}
                                     <textarea class="form-control"
                                               onclick="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'"
@@ -217,6 +217,10 @@
             <form action="{{ url_for('adminPanel.edit_about') }}" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
+                        {% if post.id %}
+                        <p><a href="{{ url_for('adminPanel.edit_post', post_id=post.id) }}">Edit Post {{ post.id }}</a>
+                        </p>
+                        {% endif %}
                         <label class="form-label" for="aboutId">Enter About ID:</label>
                         <input class="form-control" id="aboutId" name="id" required type="number">
                     </div>

@@ -5,8 +5,12 @@
 <form action="{{ url_for('adminPanel.edit_about') }}" method="POST">
     {{ form.csrf_token }}
     <div class="mb-3">
-        <label class="form-label" for="id">About Me Post ID</label>
+
+        <!-- Make sure the post variable is available in the context when rendering this template -->
+
+        <label class="form-label" for="id">Choose Other Post ID</label>
         <input class="form-control" id="id" name="id" type="number" value="{{ form.id.data }}">
+
     </div>
     <button class="btn btn-primary" type="submit">Save</button>
 </form>

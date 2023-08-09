@@ -41,8 +41,10 @@ def dashboard():
     """
     page = request.args.get('page', 1, type=int)
     pagination = Comment.query.order_by(Comment.date_created).paginate(page=page, per_page=10)
-    print(pagination.items)
-    return render_template("admin/adminbase.html", comments=pagination, pagination=pagination)
+    post = About.query.first()
+    # print(post.id)
+    # print(pagination.items)
+    return render_template("admin/adminbase.html", comments=pagination, pagination=pagination, post=post)
 
 
 @manage.route('/users')
