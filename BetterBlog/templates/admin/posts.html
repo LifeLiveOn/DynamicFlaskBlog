@@ -58,7 +58,8 @@
         <tr class="text-center">
             <!--            <th scope="row">{{ loop.index }}</th>-->
             <td>{{post.id}}</td>
-            <td>{{post.author}}</td>
+            <!--            customer filter template to get user id name-->
+            <td>{{post.author|getName}}</td>
             <td>{{ post.title }}</td>
             <td>{{post.subtitle}}</td>
             <td>{{ post.date_created }}</td>

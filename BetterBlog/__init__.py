@@ -95,6 +95,7 @@ def create_app():
     @app.template_filter('getName')
     def get_author_name(user_id):
         author = User.query.filter(User.id == user_id).first()
+        # print(user_id)
         if author:
             return author.username
         else:
