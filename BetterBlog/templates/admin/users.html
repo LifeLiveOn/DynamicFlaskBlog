@@ -77,6 +77,8 @@
     </table>
 </div>
 
+{% block editAbout %}{% endblock %}
+
 <!-- Pagination Links-->
 <div class="text-right">
     <a href="{{ url_for('adminPanel.users', page=pagination.prev_num) }}"
